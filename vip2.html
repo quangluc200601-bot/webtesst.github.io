@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Câu Chuyện VIP 2</title>
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-card: #1a1a2e;
+            --accent: #ff6b9d;
+            --text: #ffffff;
+            --text-dim: #a0a0b0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #2e0a1a 100%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, var(--accent), #6c63ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .story-card {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .story-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(255, 107, 157, 0.3);
+        }
+        
+        .story-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #6c63ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        
+        .story-info h3 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .story-date {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+        
+        .story-text {
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: var(--text-dim);
+        }
+        
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .gallery img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        .gallery img:hover {
+            transform: scale(1.08) translateY(-5px);
+            box-shadow: 0 12px 30px rgba(255, 107, 157, 0.5);
+            filter: brightness(1.1);
+        }
+        
+        /* Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .lightbox.active {
+            display: flex;
+        }
+        
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+        }
+        
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            font-size: 50px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 1001;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            backdrop-filter: blur(10px);
+        }
+        
+        .lightbox-close:hover {
+            background: rgba(255,255,255,0.2);
+            transform: rotate(90deg);
+        }
+        
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 50px;
+            color: white;
+            cursor: pointer;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+            user-select: none;
+        }
+        
+        .lightbox-nav:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .lightbox-prev {
+            left: 30px;
+        }
+        
+        .lightbox-next {
+            right: 30px;
+        }
+        
+        .lightbox-counter {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 18px;
+            background: rgba(0,0,0,0.6);
+            padding: 10px 25px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body>
+<script>if(!sessionStorage.getItem('activeKey')||!sessionStorage.getItem('activeTelegram'))window.location.href='login.html';</script>
+
+<nav style="max-width:1200px;margin:18px auto;display:flex;justify-content:center;gap:12px;position:relative;flex-wrap:wrap;z-index:100;">
+  <a href="index.html" style="text-decoration:none;padding:8px 18px;border-radius:6px;font-weight:600;background:#ffd54a;color:#222;border:none;margin:4px;transition:background 0.2s;cursor:pointer;">Trang chủ</a>
+  <a href="vip1.html" style="text-decoration:none;padding:8px 18px;border-radius:6px;font-weight:600;background:#ffd54a;color:#222;border:none;margin:4px;transition:background 0.2s;cursor:pointer;">Câu Chuyện</a>
+  <a href="vip2.html" style="text-decoration:none;padding:8px 18px;border-radius:6px;font-weight:600;background:#d35400;color:#fff;border:none;margin:4px;transition:background 0.2s;cursor:pointer;">Câu Chuyện</a>
+  <a href="shop.html" style="text-decoration:none;padding:8px 18px;border-radius:6px;font-weight:600;background:#ffd54a;color:#222;border:none;margin:4px;transition:background 0.2s;cursor:pointer;">Shop Tài Khoản</a>
+  <a href="marketplace.html" style="text-decoration:none;padding:8px 18px;border-radius:6px;font-weight:600;background:#ffd54a;color:#222;border:none;margin:4px;transition:background 0.2s;cursor:pointer;">Appweb</a>
+  <a href="vip3.html" style="text-decoration:none;padding:8px 18px;border-radius:6px;font-weight:600;background:#ffd54a;color:#222;border:none;margin:4px;transition:background 0.2s;cursor:pointer;">Đang phát triển</a>
+</nav>
+
+    <div class="container">
+        <h1>📖 Câu Chuyện VIP 2</h1>
+        <div class="stories-grid">
+            
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">C</div>
+                    <div class="story-info">
+                        <h3>CÂU CHUYỆN ĐỜI SỐNG</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Nhà hàng xóm bên cạnh nhà anh có 2 vợ chồng có 1 cháu trai 1 cháu gái. Chị vợ thì hiền lành đảm đang việc nhà nuôi dạy các cháu ăn lo việc nhà cửa trong ngoài. Còn anh chồng thì đi làm rồi nảy sinh mối quan hệ bên ngoài. Về nhà chê canh mặn nhà bẩn để tìm lý do quát mắng chị vợ. Chị vợ cũng biết anh ấy có mối quan hệ bên ngoài. Mọi người cũng khuyên chị ấy bỏ nhiều lần nhưng chị ấy bảo sống vì các con. Đỉnh điểm hôm nay anh ấy về quát mắng không những thế còn đánh cả chị ấy, không biết là dùng vật gì đánh mà làm chị ấy chảy máu ướt cả đầu và áo. Thấy to tiếng mọi người xung quanh vào can ngăn anh ấy còn chửi bới 1 lúc mới thôi và bỏ đi. Ai cũng khuyên ngăn nhưng chị ấy bảo bỏ đi thì con ở với ai thiếu thốn cha mẹ con lại khổ. Chị ấy nói câu đấy ai cũng thấy thương có người còn rưng rưng nước mắt. Mọi người khuyên nhủ rồi chở chị ấy đi viện xong thì ai về nhà đấy còn mỗi 2 đứa nhỏ thì sang nhà anh chơi. Người phụ nữ chân yếu tay mềm lo toan cho gia đình từ trong ra ngoài từ ngoài vào trong vậy mà anh ấy nỡ lòng đánh chị ấy như thế cơ chứ.</div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">C</div>
+                    <div class="story-info">
+                        <h3>CÂU CHUYỆN ĐỜI SỐNG</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Anh đang trên đường về thì gặp vụ tai nạn này. Anh thấy mọi người cứ đứng nhìn, anh bèn nói cho lên xe  anh chở đi bệnh viện giúp. Nhưng trước khi chở người ta đi viện, anh phải chụp lại hình, em biết tại sao không? Mình giúp người nhưng cũng nên đề phòng chuyện gia đình người bị tai nạn, không hiểu sự việc lại nghĩ mình là người gây tai nạn thì họ sẽ kích động em ạ.Người bị tai nạn là một thanh niên khá trẻ, nhìn cách ăn mặc và những vết sơn trên nguời, anh đoán là đi làm thợ sơn về. Khi vào viện một lúc thì anh bạn trẻ cũng tỉnh dậy, bác sĩ nói do va chạm nên chỉ bị choáng nên ngất đi, cũng may không bị chấn thương nghiêm trọng, chỉ bị xây sát một chút ở tay và chân. Anh hỏi thăm thì biết hoàn cảnh khá đáng thương, nhà chỉ có hai mẹ con, mẹ bị liệt do năm ngoái đi làm bị trượt chân té. Anh thấy thương quá nên đã trả tiền viện phí cho bạn ấy và còn vài triệu tiền mặt anh cũng cho bạn ấy.Anh không nghĩ quá nhiều em ạ, anh giúp đỡ người khác lúc này thì sẽ có người giúp mình lúc khác thôi em.</div>
+            <div class="gallery">
+                <img src="photos2/photo_2@12-11-2025_18-39-46.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">C</div>
+                    <div class="story-info">
+                        <h3>CÂU CHUYỆN ĐỜI SỐNG</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Chiều nay, anh cùng mấy anh em trong nhóm thiện nguyện tự phát lại đến Cơ sở Bảo trợ Trẻ em Lâm Bích. Trước khi đi, cả nhóm rủ nhau mỗi người góp một ít - không nhiều nhưng là tấm lòng của những người làm cha làm mẹ, muốn mang chút gì đó đến cho các con. Bọn anh ghé qua chợ mua ít vật dụng cần thiết, thêm mấy túi hoa quả tươi, vài thùng sữa và bánh cho lũ nhỏ.Vừa bước vào cổng trung tâm, tiếng nói cười của đám trẻ đã vang lên làm cả nhóm tự nhiên thấy lòng nhẹ tênh. Có bé chạy ù ra chào, có bé còn ngại ngùng đứng núp sau lưng cô bảo mẫu, đôi mắt đen lay láy nhìn xem “mấy chú lần trước tới nữa hả?”. Những khoảnh khắc như vậy khiến ai cũng thấy ấm lòng.Cô quản lý trung tâm dẫn bọn anh đi một vòng. Nhìn mấy chiếc giường nhỏ, những đôi dép xếp gọn bên góc phòng, rồi những gương mặt non nớt nhưng ánh mắt già dặn hơn tuổi, ai trong nhóm anh cũng lặng lại đôi chút. Khi mình đã có con, chỉ cần nhìn thấy một đứa trẻ thiếu thốn tình thương là cảm xúc như chạm đúng dây: nghèn nghẹn, thương đến lạ.Trong lúc phát quà, các con ùa ra, miệng ríu rít cảm ơn, ôm lấy chân các chú. Có bé còn giành anh quả chuối hay hộp sữa như kiểu “tặng lại” ngây thơ mà khiến người lớn chỉ biết mỉm cười rồi quay đi lau vội khóe mắt. Đến lúc chuẩn bị ra về, như thường lệ, có vài bé lại chạy theo, níu áo níu tay, miệng mếu máo: “Chú đừng đi… mai chú lại đến nha…”. Cái cảm giác đó thực sự rất khó nói thành lời. Vừa thương vừa xót, chỉ muốn ở lại chơi với các con thêm chút nữa. Bọn anh hứa sẽ quay lại, rồi nhẹ nhàng gỡ từng bàn tay nhỏ đang níu lấy mình. Khi bước ra khỏi cổng, nhóm anh ai cũng im lặng một lát. Không phải buồn, mà là một sự thấm thía : chỉ cần chút chia sẻ nhỏ thôi cũng có thể gieo cho các con niềm vui, còn với bọn anh, đó là bài học về sự biết ơn và trân trọng.Một buổi ghé thăm ngắn ngủi, nhưng cảm xúc thì đọng lại rất lâu.</div>
+            <div class="gallery">
+                <img src="photos2/photo_3@26-11-2025_14-04-46.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos2/photo_4@26-11-2025_14-04-46.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos2/photo_5@26-11-2025_14-04-46.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Sáng nay, trên đường đi làm, vừa đến gần ngã tư đèn xanh đèn đỏ, anh bắt gặp một hình ảnh khiến lòng mình khựng lại. Một ông cụ nhỏ thó đang ngồi nép bên lề đường, trước mặt là mấy nải chuối xanh còn thơm mùi sương sớm. Dáng cụ gầy gò, cái lưng còng xuống như muốn gánh hết nỗi nhọc nhằn của tuổi già. Anh dừng xe, tấp vào lề. Cụ ngẩng lên, nụ cười hiền nhưng phảng phất vẻ mệt mỏi. Hỏi thăm mới biết, số chuối này cụ mua lại của người ta để bán kiếm thêm chút tiền. Nhưng vì chuối còn xanh quá, chẳng mấy ai dừng lại mua. Và thế là cụ ngồi mãi ở đó, giữa dòng xe tấp nập, chờ một người khách đến rồi lại đi qua…Nghĩ vậy, anh quyết định mua hết chỗ chuối cho cụ. Cụ mừng đến sáng cả đôi mắt, miệng cứ luôn miệng cảm ơn, còn anh thì chỉ thấy lòng mình ấm lại.Mua xong, anh mang số chuối ấy đến Cơ sở Bảo trợ Trẻ em Lâm Bích – nơi anh vẫn thường lui tới làm từ thiện. Các cô ở trung tâm nhìn thấy anh lại cười: “Anh lại đem đồ đến cho tụi nhỏ hả?”. Anh gửi số chuối lại để các cô chế biến cho các bé, nghĩ đến cảnh cả đám nhỏ xúm xít ăn chuối mà thấy vui vô cùng. Một buổi sáng bình thường nhưng lại tràn đầy ý nghĩa. Chỉ cần một hành động nhỏ, cũng có thể làm ấm lòng một người và mang niềm vui đến cho nhiều người khác.</div>
+            <div class="gallery">
+                <img src="photos2/photo_6@26-11-2025_14-06-53.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Phát Cơm Từ Thiện – Một Chiều Đầy Nhân NghĩaChiều nay, nhóm thiện nguyện của anh lại hẹn nhau ở cổng Bệnh viện Chấn thương Chỉnh hình Quận 5 để phát cơm cho bệnh nhân và người nhà. Trời lúc ấy vừa hết mưa, bầu không khí còn thoang thoảng mùi ẩm của sân bệnh viện, từng dòng người ra vào vội vã, mệt mỏi vì những nỗi lo không thể gọi thành tên.Nhóm của anh chuẩn bị hơn trăm suất cơm, mỗi suất đều được chia cẩn thận: cơm nóng, thức ăn còn bốc khói, thêm miếng trái cây cho có phần ngọt bùi. Mấy anh em trong nhóm ai nấy đều tất bật, người xếp cơm, người bê thùng nước, người dọn bàn - nhưng khuôn mặt ai cũng ánh lên sự hào hứng, bởi họ biết mình sắp góp được chút gì đó cho những cuộc đời đang cần sẻ chia.Khi bắt đầu phát cơm, hàng người nhanh chóng dài ra. Những gương mặt hốc hác vì thức đêm chăm bệnh, những đôi bàn tay chai sạn của người lao động nghèo, những ánh mắt đỏ hoe vì lo lắng… tất cả lặng lẽ xếp hàng, không chen lấn, chỉ nhẹ nhàng nói:“Cảm ơn con…”,“Chú ơi, cho thêm phần cho người bệnh bên trong nhé…”.Có cô bác chỉ vừa nhận phần cơm đã ngồi ngay xuống bậc thềm ăn vội vì cả ngày chưa kịp bỏ bụng. Có chú chạy xe ôm chở người thân từ tỉnh lên, vừa cầm hộp cơm vừa nói:“Thiệt sự cảm ơn mấy đứa, giờ khó khăn quá mà có hộp cơm như vầy quý lắm”.Những câu nói giản dị mà nghe xong ai nấy cũng thương.Nhóm anh đã quen với hình ảnh này vì bọn anh đến đây thường xuyên. Chẳng phải chuyện lớn lao gì - chỉ là góp chút sức nhỏ, chút thời gian để giúp họ vơi bớt một phần gánh nặng. Nhưng mỗi lần đến, cảm xúc lại khác. Có lúc thấy xót xa, có lúc thấy biết ơn cuộc sống, và cũng có lúc tự nhủ: chỉ cần mình còn sức, còn có thể chia sẻ, thì nhất định sẽ quay lại.Khi phát xong suất cơm cuối cùng, cả nhóm đứng nhìn sân bệnh viện đã vãn người, ai cũng thở phào nhưng lòng lại nhẹ một cách kỳ lạ.Bởi đơn giản, giữa cuộc sống bộn bề, được giúp ai đó dù chỉ một bữa cơm… cũng là điều thật ý nghĩa.</div>
+            <div class="gallery">
+                <img src="photos2/photo_7@26-11-2025_14-16-57.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos2/photo_8@26-11-2025_14-16-57.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Đọc Sách – Thói Quen Nhỏ, Giá Trị LớnGóc phòng ngủ của anh lúc nào cũng có một chồng sách. Từ sách kỹ năng, sách kinh doanh đến những cuốn tiểu thuyết nhẹ nhàng - tất cả đều là “người bạn” quen thuộc mỗi tối.Mỗi ngày trước khi đi ngủ, anh dành đúng một tiếng đồng hồ để đọc. Chẳng phải ép buộc, mà vì anh xem đó là khoảng thời gian thư giãn nhất sau một ngày làm việc bận rộn. Khi mọi thứ đã lắng lại, khi tiếng xe ngoài đường nhỏ dần, chỉ còn không gian yên tĩnh trong phòng - đó chính là lúc anh cảm thấy đầu óc mình mở ra, tiếp thu nhanh hơn và nhớ lâu hơn.Nhiều người hỏi: “Sao anh lại chọn đọc sách vào ban đêm?”Anh chỉ cười và nói: “Ban ngày đầu óc lo chuyện làm ăn, tính toán đủ thứ. Đêm xuống, tâm mình yên thì kiến thức mới vào được.”Theo anh, muốn tư duy phát triển thì phải đọc, phải học, phải mở rộng hiểu biết từng ngày. Việc học chưa bao giờ có điểm dừng, và sách là nơi chứa những bài học mà đôi khi phải mất cả đời người ta mới đúc kết được.Mà điều anh thích nhất là khoảnh khắc đọc truyện cho con gái trước khi ngủ. Con bé nằm bên cạnh, ôm gối nghe từng câu chuyện anh kể. Có hôm đang kể mà em bé ngủ gục lúc nào không hay, còn anh thì vẫn tiếp tục đọc nốt vài trang cho bản thân. Những giây phút ấy làm anh thấy cuộc sống nhẹ nhàng hơn nhiều.Sách không chỉ cho anh kiến thức - mà còn cho anh sự bình yên, sự kết nối với con gái, và cả một thói quen đẹp để nuôi dưỡng tâm hồn mỗi ngày.</div>
+            <div class="gallery">
+                <img src="photos2/photo_9@26-11-2025_14-19-13.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Làm Sổ Tiết Kiệm Cho Con : Hành Trang Cho Một Tương Lai Bình YênChiều nay, anh đang ngồi ở ngân hàng đây em. Trước mặt anh là tờ hồ sơ mở sổ tiết kiệm cho con gái, một việc làm nhỏ thôi nhưng lại mang nhiều ý nghĩa đối với một người làm cha. Con bé còn nhỏ xíu, còn đang nô đùa vô tư, chẳng cần biết thế giới ngoài kia có bao nhiêu khó khăn. Nhưng anh thì phải nghĩ xa. Tương lai của con là thứ anh luôn đặt lên trước cả bản thân mình.Anh bàn với ngân hàng mở cho con một sổ tiết kiệm dài hạn, mỗi tháng gửi vào một khoản cố định, tầm 50 đến 80 triệu, tùy theo từng thời điểm công việc. Anh dự định duy trì cho đến khi con đủ 18 tuổi, hoặc nếu có điều kiện hơn thì tiếp tục đến 24 tuổi. Đó sẽ là khoản tiền để con dùng khi học đại học, khi đi du học, hoặc khi bắt đầu những bước đầu tiên vào đời. Anh ngồi ký giấy tờ mà trong lòng cứ nghĩ: &quot; Sau này con lớn, dù con chọn con đường nào, ba cũng muốn con có điểm tựa để bước đi, không chật vật như ba ngày trước.”Cuộc đời anh đã từng trải qua nhiều thiếu thốn, vất vả. Những ngày phải tự mình gồng gánh mọi thứ, tự xoay xở mà không có chỗ dựa — nó khiến anh hiểu rằng, nếu có thể chuẩn bị cho con một nền tảng tốt hơn, anh nhất định sẽ làm. Anh chỉ mong con lớn lên được sống an nhiên, đầy đủ, không phải bươn chải sớm, không phải lo cơm áo như ba đã từng. Nhân viên ngân hàng hỏi: “Anh làm sổ cho bé từ giờ là tốt lắm. Khi bé 18 tuổi nhận lại chắc cảm động lắm đây.”Anh chỉ cười, nhưng trong lòng lại thấy ấm áp. Anh không mong con phải biết ơn, chỉ mong con hiểu rằng tình yêu của cha mẹ đôi khi nằm trong những điều âm thầm như thế này. không ồn ào, không phô trương, nhưng bền bỉ theo năm tháng. Cuốn sổ tiết kiệm ấy không chỉ là tiền. Nó là cả tương lai, cả hy vọng, và cả tình yêu của anh dành cho con.</div>
+            <div class="gallery">
+                <img src="photos2/photo_10@26-11-2025_14-27-00.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos2/photo_11@26-11-2025_14-27-00.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos2/photo_12@26-11-2025_14-27-00.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Thể Thao – Vừa Rèn Sức Khỏe, Vừa Suy Ngẫm Về Cuộc ĐờiChiều nay, anh đang đi chơi cầu lông đây em. Sân cầu lông quen thuộc, tiếng giày chạm sàn, tiếng vợt quất “bốp bốp” nghe mà khoan khoái cả người. Hầu như ngày nào anh cũng dành thời gian vận động — lúc thì chạy bộ, lúc thì cầu lông. Cứ coi đó như một thói quen để giữ sức khỏe và giải tỏa áp lực công việc.Trước đây anh mê đá bóng lắm. Tuần nào cũng phải có một trận mới thấy người “đã”. Nhưng càng lớn tuổi, cơ thể cũng lên tiếng nhắc nhở. Một lần nhân viên công ty theo anh đi đá bóng rồi bị đứt dây chằng, phải nằm viện cả tháng… Từ hôm đó, anh suy nghĩ nhiều. Anh sợ nếu chẳng may có chuyện gì xảy ra, không chỉ người bị thương khổ mà cả gia đình họ cũng lo lắng đứng ngồi không yên.Còn bản thân anh, giờ mà lỡ chấn thương một cái thì công việc, nhân viên, rồi bố mẹ, rồi con gái — tất cả đều bị ảnh hưởng. Nghĩ vậy nên anh hạn chế đá bóng, chuyển sang những môn nhẹ nhàng mà vẫn rèn luyện được như cầu lông.Vừa chơi vừa toát mồ hôi, anh lại chợt nghĩ đến con gái. Anh luôn cố gắng làm việc chăm chỉ, gìn giữ sức khỏe để lo cho con tương lai tốt hơn. Anh đã từng trải qua tuổi thơ thiếu thốn, gia đình không dư giả. Những tháng ngày cực khổ đó khắc sâu trong lòng anh, khiến anh càng quyết tâm để con mình không phải thiếu thốn như anh ngày trước.Anh nói với em như thế này:“Giờ anh chỉ mong bản thân khỏe mạnh, làm ăn ổn định để con sau này có một cuộc sống đầy đủ, bình yên. Cha mẹ nào chẳng mong con tốt hơn mình.”Trên sân cầu lông, anh vẫn tiếp tục chơi, từng đường cầu như giải tỏa bao mệt mỏi. Nhưng phía sau đó, là cả một người đàn ông trưởng thành - biết nghĩ, biết lo, biết sống vì gia đình, vì tương lai của con.</div>
+            <div class="gallery">
+                <img src="photos2/photo_13@26-11-2025_14-31-19.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos2/photo_14@26-11-2025_14-31-19.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos2/photo_15@26-11-2025_14-31-19.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Buổi Ăn Cảm Ơn Với Đội PCCCTối nay, anh đang ngồi ăn cùng đội Phòng cháy Chữa cháy đây em. Coi vậy chứ bữa ăn này không phải ngẫu nhiên đâu. Nó bắt đầu từ một sự cố của tuần trước.Hôm đó, bên PCCC bất ngờ xuống kiểm tra xưởng. Qua một vòng rà soát, họ phát hiện khá nhiều vấn đề tồn đọng: Một số bình cứu hỏa hết hạn sử dụng, công cụ, vật tư không được sắp xếp đúng quy định, nguyên vật liệu chất chưa đúng khu vực, một vài hạng mục vi phạm tiêu chuẩn an toàn cháy nổ.Tất cả những lỗi đó khiến họ buộc phải lập biên bản và đưa ra mức phạt 50 triệu đồng. Thật sự lúc đó anh biết lỗi thuộc về xưởng mình, nhưng anh cũng lo lắng : không phải vì tiền phạt, mà vì nó ảnh hưởng uy tín và hoạt động của xưởng về lâu dài.Trong lúc rối bời, anh chợt nhớ đến chú anh, người vừa là bạn, vừa là anh em thân thiết của đội trưởng đội PCCC bao năm nay. Anh gọi cho chú anh để nhờ chú nói giúp, không phải để “xin bỏ qua”, mà để hỏi rõ quy định, nhờ chú hướng dẫn chi tiết phải khắc phục thế nào cho đúng chuẩn, để sau này không còn phạm phải nữa.Nghe xong, chú có trách anh mấy câu: “Làm ăn bao lâu rồi mà để mấy lỗi cơ bản lọt ra vậy? Cháy nổ mà xảy ra là không đùa được đâu.”Anh cũng chỉ biết im lặng nhận sai. Nhưng chú hiểu tính anh, nên vẫn giúp, gọi điện nhờ đội trưởng chỉ đạo thêm, hướng dẫn anh từng hạng mục phải sửa, phải thay, phải bố trí ra sao để đảm bảo an toàn và tuân thủ pháp luật. Nhờ vậy, xưởng anh nhanh chóng hoàn thiện lại và mọi việc được giải quyết ổn thỏa.Tối nay, coi như để cảm ơn sự hỗ trợ tận tình đó, anh mời chú và vài anh em lãnh đạo bên PCCC đi ăn. Không phải để “mua chuộc” hay “nhờ vả”, mà để tạo mối quan hệ tốt, để sau này khi có vấn đề về an toàn cháy nổ thì xưởng có thể chủ động tham khảo, nắm rõ quy định, và làm mọi thứ bài bản hơn.Anh vừa ăn vừa nghĩ: Trong làm ăn, tiền rất quan trọng, nhưng hiểu đúng luật và có mối quan hệ đúng nghĩa còn quan trọng hơn.Không phải dựa dẫm, mà là học hỏi và chuẩn hóa công việc để không xảy ra sai sót nữa.</div>
+            <div class="gallery">
+                <img src="photos2/photo_16@26-11-2025_14-45-34.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Cafe Cùng Khách Hàng : Từ Cuộc Hẹn Công Việc Thành Một Mối Quan Hệ MớiSáng nay, anh có buổi hẹn cafe với một khách hàng quan trọng. Đây không chỉ là cuộc gặp xã giao, mà còn để bàn bạc kỹ hơn về việc hợp tác cung cấp nội thất cho dự án mà công ty anh đang thi công. Người đàn ông ấy có tiếng trong ngành, lại kỹ tính, nên anh cũng chuẩn bị khá kỹ trước khi đi.Quán cafe hôm nay khá yên tĩnh, ánh nắng chiếu qua kính tạo cảm giác ấm áp. Vừa ngồi xuống, anh mở laptop và lấy ra một số mẫu nội thất: từ chất liệu gỗ, kiểu dáng bàn ghế cho đến bảng màu hoàn thiện. Hai người cùng xem, cùng phân tích từng chi tiết. Khách hàng gật gù, hỏi kỹ từng hạng mục — đúng kiểu người làm việc nghiêm túc.Nhưng điều bất ngờ lại đến sau đó.Khi đã bàn xong phần chuyên môn, anh chủ động hỏi vài câu về sở thích cá nhân để không khí bớt căng. Không ngờ đối tác của anh lại rất cởi mở. Hai người bắt đầu nói về những chuyến đi phượt ngày trẻ, những món ăn thích nhất, thậm chí cả thú vui sưu tầm đồ gỗ cũ — điều mà ít ai biết anh cũng có sở thích này.Càng nói càng thấy hợp, hai người như quen nhau từ lâu. Đối tác còn bật cười bảo: “Không ngờ gặp người cùng gu như cậu. Làm việc với người hợp tính vẫn dễ chịu hơn nhiều.”Không khí trở nên thoải mái hẳn. Ly cafe vốn nhạt, bỗng thấy ngon hơn vì câu chuyện rôm rả. Đến cuối buổi, vị khách hàng ấy nhìn anh, chìa tay ra và nói:“Dự án này tôi giao cho cậu. Làm tốt, sau này còn hợp tác dài.”Và thế là hợp đồng được ký ngay trong buổi gặp đầu tiên.Nhưng điều làm anh vui hơn cả không chỉ là công việc suôn sẻ, mà là việc anh có thêm một người bạn mới, một mối quan hệ thật sự chứ không phải kiểu xã giao bề ngoài. Anh luôn nghĩ rằng: &quot; Trong kinh doanh, hợp đồng quan trọng. Nhưng có được người bạn đồng hành thì đáng quý hơn nhiều &quot;.Một buổi cafe, hai ly nước, vài câu chuyện ngoài lề… mà lại mở ra thêm một chặng đường hợp tác mới và một mối quan hệ tốt đẹp.</div>
+            <div class="gallery">
+                <img src="photos2/photo_17@26-11-2025_15-04-41.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos2/photo_18@26-11-2025_15-04-41.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos2/photo_19@26-11-2025_15-04-41.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Một Buổi Tối Bình Yên : Nấu Ăn Cho Người Mình ThươngTối nay, trên đường từ công ty về, anh tạt vào siêu thị gần nhà. Đèn vàng trong siêu thị hắt xuống những quầy rau xanh mướt, hải sản còn bốc hơi lạnh và những quầy gia vị thơm phức. Mặc dù ở nhà đã có dì Hai lo chuyện bếp núc mỗi ngày, nhưng riêng cuối tuần, anh luôn muốn tự tay chuẩn bị bữa ăn cho mẹ và con gái.Anh đẩy chiếc xe đẩy đi dọc theo từng quầy hàng, vừa chọn thực phẩm vừa nghĩ xem hôm nay nên nấu món gì? Món cá kho mẹ thích hay món mì Ý mà con gái vẫn hay đòi ba làm? Chỉ cần nghĩ đến cảnh họ ăn ngon miệng là lòng anh đã thấy vui rồi.Anh chọn từng bó rau, từng miếng thịt kỹ lưỡng như chuẩn bị cho một buổi tiệc nhỏ. Thấy món gì ngon, anh đều hình dung ngay khuôn mặt mẹ khi nếm thử, hay đôi mắt con gái sáng lên mỗi khi reo: “Ba nấu món này ngon quá!”Về đến nhà, anh xắn tay áo vào bếp. Dì Hai định giúp, nhưng anh cười bảo: “Để con tự làm. Cuối tuần mà, cho con chăm hai người một bữa.”Mùi hành phi lan tỏa khắp gian bếp, tiếng xoong nồi lách cách nghe thật quen thuộc và ấm áp. Mẹ anh ngồi ngoài phòng khách thỉnh thoảng hé vào nhìn, con gái thì chạy lon ton vòng vòng, vừa xem vừa hỏi: “Ba ơi, con được nếm thử trước không?”Đến khi bữa ăn bày lên bàn, mẹ và con gái anh thưởng thức rồi gật gù tấm tắc khen: “Món này ngon hơn tuần trước đó nha!” “Ba là đầu bếp số một luôn!”Nghe những câu khen vô tư mà chân thành ấy, anh thấy mọi mệt mỏi trong ngày tan biến hết. Cảm giác được tự tay chăm sóc cho người thân yêu — nó bình dị nhưng mang lại hạnh phúc lớn không gì sánh được.Trong cuộc sống bộn bề, đôi khi niềm vui chỉ đơn giản là thế: một bữa cơm do chính mình nấu, và những người mình thương đang ngồi quanh bàn, cười nói rộn ràng.</div>
+            <div class="gallery">
+                <img src="photos2/photo_20@26-11-2025_15-14-10.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos2/photo_21@26-11-2025_15-14-10.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos2/photo_22@26-11-2025_15-14-10.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Giúp Ông Cụ Bán Sâm : Một Cuộc Gặp Gỡ Đêm Khuya Khiến Lòng Day DứtTối nay, sau buổi gặp đối tác, anh và anh Thành chạy xe về thì trời đã gần 11 giờ khuya. Đường phố lúc ấy vắng lặng, chỉ còn ánh đèn vàng trải dài trên con đường thưa thớt bóng người.Đang chạy, bất giác anh thấy bên kia đường có một bóng dáng lom khom ngồi dưới cột đèn. Một ông cụ già, dáng người nhỏ bé, trước mặt đặt mấy bịch sâm củ sen dừa tươi để bán. Dưới ánh đèn đường nhợt nhạt, trông cụ càng gầy gò và tội nghiệp.Anh vội bảo anh Thành tấp xe vào lề. Rồi anh đi bộ sang bên kia đường, nhẹ nhàng hỏi thăm: “Cụ ơi, sao khuya rồi cụ còn ngồi bán vậy?”Cụ ngẩng lên, đôi mắt đã mờ theo năm tháng nhưng vẫn ánh lên sự hiền hậu. Giọng cụ run run, chậm rãi kể: Cụ bán dạo một mình, hằng ngày đi bộ từ nhà ra đường kiếm ít tiền lời, vợ cụ bị bệnh thận, phải chạy thận nhiều năm, tiền thuốc men tốn kém,con trai duy nhất lại bị thiểu năng trí tuệ, không thể lao động được, nhà chẳng còn ai, cụ hơn 80 tuổi vẫn phải gồng mình mưu sinh. Nghe mà lòng anh trùng xuống. Một người già như vậy, giờ này vẫn ngồi co ro bên vỉa hè chỉ để kiếm vài chục ngàn, nghĩ đến mà thấy xót xa không nói nên lời.Anh không suy nghĩ nhiều, liền mua hết toàn bộ chỗ hàng của cụ. Rồi anh biếu cụ thêm chút tiền để cụ lo thuốc men, sinh hoạt. Cụ cảm ơn liên tục, hai bàn tay run run mà mắt cụ rơm rớm. Anh chỉ nhẹ nhàng nói: “Cụ ơi về nghỉ sớm đi, trời khuya lạnh lắm rồi. Đừng ngồi lâu nữa, sức khỏe quan trọng hơn.”Ông cụ gật đầu, thu dọn đồ đạc chậm chạp. Cái dáng lưng còng ấy làm anh thấy nghẹn lòng. Khi trở lại xe, anh ngồi yên vài giây rồi thở dài: “Trên đời này… sao nhiều người khổ quá em nhỉ? Có người chỉ mong kiếm vài đồng để sống qua ngày.”Một việc nhỏ thôi, nhưng để lại trong lòng anh cảm giác day dứt và thương cảm khó tả. Và giữa đêm khuya, khi thành phố đã ngủ, anh chợt thấy mình may mắn và càng muốn sống tử tế hơn với những mảnh đời khốn khó ngoài kia.</div>
+            <div class="gallery">
+                <img src="photos2/photo_23@26-11-2025_15-18-35.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Bữa Tối Đoàn Viên – Tình Thương Dành Cho Một Em Bé NgoanTối nay, vợ chồng em gái của vợ anh rủ cả nhà đi ăn lẩu nướng ở một nhà hàng khá ấm cúng trong thành phố. Hai vợ chồng em ấy lập nghiệp xa, lâu lâu mới có dịp về thăm nhà, nên bữa ăn này vừa là đoàn tụ, vừa là dịp gặp gỡ con gái anh mà họ thương vô cùng.Ngay khi bước vào nhà hàng, con bé nhà anh đã chạy đến ôm chặt “dì út” rồi tíu tít kể chuyện trường lớp. Còn chú thì cười hiền, xoa đầu bé, đôi tay xách theo mấy túi quà to nhỏ, nào váy đầm mới, nào đồ chơi, rồi cả vài món bánh kẹo mà bé thích. Lần nào về, chú dì cũng mang theo đủ thứ, thương con bé vì thiệt thòi nhiều, thiếu bàn tay của mẹ từ khi còn rất nhỏ.Ấy vậy mà con gái anh ngoan lắm. Khi mở quà xong, bé quay sang nhìn anh rồi nói nhỏ: “Ba ơi, mai mình mua ít bánh kẹo gửi cho các em nhà chú dì nha. Con có đồ mới rồi, phải cho các em nữa.”Nghe câu nói ấy, cả nhà nhìn nhau rồi mỉm cười. Một đứa trẻ còn bé xíu nhưng lại biết nghĩ, biết chia sẻ, và có trái tim ấm áp đến thế. Anh nghe mà lòng tự nhiên mềm lại, vừa thương vừa tự hào vô cùng. Bữa tối diễn ra vui vẻ, bàn ăn lúc nào cũng đầy ắp tiếng cười. Dì út vừa gắp đồ ăn cho bé vừa nói với anh: “Anh à, con bé ngoan thiệt. Mai sau lớn lên chắc chắn thành người tử tế đó.”Anh chỉ cười nhẹ, nhưng trong lòng dâng lên cảm xúc khó tả. Làm cha một mình không dễ, nhưng nhìn con trưởng thành từng chút một, biết yêu thương và biết cho đi, anh thấy mọi cố gắng của mình đều xứng đáng.Cuối buổi, khi ra về, con gái vẫn còn líu ríu nắm tay chú dì, không muốn xa. Anh đứng nhìn cảnh ấy mà thấy trong lòng ấm lạ thường, giữa bộn bề cuộc sống, chỉ cần có gia đình bên cạnh, có những người thương con mình thật lòng, là đã đủ hạnh phúc rồi.Anh chỉ mong rằng mai sau con lớn lên, dù cuộc đời có thay đổi thế nào, vẫn giữ được sự nhân hậu, biết ơn và tấm lòng đẹp như hiện tại.</div>
+            <div class="gallery">
+                <img src="photos2/photo_24@26-11-2025_15-22-10.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos2/photo_25@26-11-2025_15-22-10.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Đối Tác Ở Hưng Yên Gửi Tặng Quà – Một Hộp Nhãn Chứa Đầy Tình CảmEm nhìn xem, đoán thử xem trong hộp này là gì không?Đó là nhãn lồng, đặc sản nổi tiếng của Hưng Yên. Hôm nay, anh nhận được món quà này từ anh Lâm, một đối tác lâu năm, thân thiết mà anh luôn coi như người bạn trong công việc.Anh Lâm ở tận Hưng Yên, nhưng vẫn gửi quà vào tận tay anh. Hộp quà không to, không cầu kỳ, cũng không phải món hàng đắt tiền. Nhưng với anh, giá trị của nó không nằm ở số tiền, mà nằm ở tấm lòng và tình cảm mà người gửi đặt vào đó.Khi mở hộp, nhìn từng quả nhãn căng tròn, vàng ươm, thoảng mùi thơm đặc trưng, anh chợt mỉm cười. Anh biết, phía sau món quà nhỏ xíu này là cả một sự quan tâm, là niềm trân trọng mối quan hệ lâu năm, là sự gắn bó giữa hai bên mà không lời nào nói hết được.Anh cầm hộp nhãn, nhớ lại những lần hợp tác cùng anh Lâm: bao nhiêu dự án, bao nhiêu thử thách, nhưng nhờ nhau mà mọi việc đều thuận lợi. Hộp nhãn hôm nay như một lời nhắc nhở rằng: trong kinh doanh, tình cảm và sự tin tưởng còn quý hơn mọi giá trị vật chất.Anh nhìn hộp quà mà lòng ấm áp, tự nhủ sẽ trân trọng hơn nữa những mối quan hệ đã gắn bó bấy lâu. Hộp quà nhỏ, nhưng chứa đựng bao nhiêu tình cảm, bao nhiêu tấm lòng mà tiền cũng không thể mua nổi, em à.Anh nghĩ, có những món quà không cần to lớn, nhưng giá trị của nó nằm ở cảm xúc và tình người. Và hộp nhãn hôm nay, với anh, chính là một món quà như thế.</div>
+            <div class="gallery">
+                <img src="photos2/photo_26@26-11-2025_15-24-07.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Chiều Nay Bị Lủng Bánh Xe – Một Chuyện Nhỏ Nhưng Cũng Rất PhiềnChiều nay, lúc đi làm về, anh bất ngờ phát hiện bánh xe sau của xe bị lủng. Thật ra thì cũng không quá bất ngờ, vì xe đã chạy lâu, có lẽ đến “thời kỳ” cần kiểm tra và sửa chữa rồi. May mà hôm nay thời tiết mát mẻ, không mưa gió, nên anh cũng yên tâm hơn chút.Anh nhìn quanh, thấy may mắn gần nhà có một gara sửa xe ô tô. Nhưng làm sao đưa xe tới đó bây giờ? Anh liền gọi điện cho anh Thành: “Em đến đón con gái trước nhé, anh sẽ chuẩn bị xe sau.”Anh Thành đồng ý ngay, rồi nhanh chóng đưa con gái về nhà. Trong khi đó, anh đứng bên đường, vừa gọi gara, vừa giữ xe tạm ổn định, tránh trơn trượt hay va quẹt.Một lúc sau, anh Thành quay lại, anh lên xe, tiện báo với gara trước: “Xe sắp được đưa qua sửa, các bạn chuẩn bị trước nhé.”May mắn là mọi chuyện diễn ra suôn sẻ. Xe được kéo vào gara, bánh xe được kiểm tra và thay mới, không ảnh hưởng đến các công việc khác.Dù chỉ là một sự cố nhỏ, nhưng anh lại thấy nhớ cảm giác lo lắng lúc đầu: xe mình gặp vấn đề giữa đường, thời gian gấp rút, con gái cần được đón về an toàn…. Nhưng may mà có anh Thành hỗ trợ, mọi việc nhanh chóng được giải quyết.Cuối cùng, anh vừa thở phào nhẹ nhõm, vừa tự nhủ: xe cộ cũng giống như con người, cần được quan tâm và chăm sóc định kỳ. Một chút chủ động hôm nay sẽ tránh phiền toái lớn sau này.</div>
+            <div class="gallery">
+                <img src="photos2/photo_27@26-11-2025_15-26-14.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Dự Sinh Nhật Cùng Con Gái – Niềm Vui Nhỏ Nhưng Đầy Ý NghĩaHôm nay, anh đưa con gái nhỏ đi cùng đến dự sinh nhật của con trai nhà anh Quân, Phó Chi cục trưởng tại Chi cục Kiểm lâm. Không gian buổi tiệc ấm cúng, tràn ngập bóng bay và tiếng cười trẻ nhỏ. Vì là chỗ quen thân, anh Quân đôi lần ghé thăm nhà anh, nên rất hiểu và quý mến con gái anh.Mỗi lần mời anh đến nhà hay có việc cần gặp, anh Quân thường nhắn thêm một câu: “Đưa bé Chíp đi cùng nha em.”Anh nhìn con bé tíu tít chạy quanh phòng, vui vẻ chào hỏi bạn bè, trong lòng cảm thấy ấm áp. Thật ra, trong công việc hay thương trường, chỉ cần mình giữ chữ tín, sống tình nghĩa, biết trước biết sau thì người khác sẽ quý mến. Anh không khoe, nhưng bé Chíp hầu như ai gặp cũng thích: đối tác, khách hàng, bạn bè đều cưng nựng, trò chuyện, ai cũng muốn bế con bé một chút.Anh biết, đó là kết quả của cả quá trình: anh nói được làm được, luôn giữ đúng uy tín, sản phẩm công ty anh chất lượng và được mọi người ưa chuộng. Chữ tín ấy lan tỏa không chỉ trong công việc, mà còn tạo ra niềm tin, sự yêu mến với cả gia đình nhỏ của anh.Trong buổi tiệc, anh vừa trò chuyện với đối tác, vừa nhìn con gái chạy nhảy, vui đùa cùng các bạn, lòng anh vừa tự hào vừa hạnh phúc. Niềm vui tuy nhỏ, nhưng chứa đựng cả tình cảm, sự trân trọng và niềm tin lâu dài mà anh xây dựng.Anh luôn tự nhủ: sống đúng, làm việc tử tế, giữ uy tín thì không chỉ mình được lợi, mà cả gia đình, con cái cũng được mọi người yêu quý và tôn trọng.</div>
+            <div class="gallery">
+                <img src="photos2/photo_28@26-11-2025_15-29-33.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Một Buổi Chiều Vội Vã – Giúp đỡ nhân viên Khi Ba Bệnh NặngHôm nay, tình cờ anh đang ở công ty thì nghe anh Quang báo anh Phú vội vàng xin về nhà vì ba anh ấy trở bệnh nặng, cần nhập viện gấp. Không chút do dự, anh bảo: “Em đừng lo, anh sẽ qua chở ba em đi viện luôn.”Anh lao vội ra xe và lái tới nhà anh ấy. Không khí lúc đó căng thẳng, gia đình vừa lo lắng vừa hoang mang. Anh giúp chuẩn bị đồ đạc, rồi đưa cả gia đình tới bệnh viện trong trạng thái vội vàng nhưng cẩn trọng.Tại viện, mọi thủ tục nhập viện thường rườm rà và mất thời gian, nhưng anh tận tay giúp đóng 5 triệu đồng tiền ứng viện phí, đồng thời hoàn tất mọi giấy tờ cần thiết, từ đăng ký khám, làm hồ sơ nhập viện, đến hướng dẫn gia đình đi vào phòng bác sĩ thăm khám.Sau khi bác sĩ thăm khám, sắp xếp phòng cho ba anh ấy ổn định, anh mới yên tâm ra về. Trên đường về, anh thấy sự lo lắng trong mắt đồng nghiệp nhẹ đi phần nào, và lòng mình cũng thấy thanh thản hơn.Một việc tưởng nhỏ, nhưng với gia đình nhân viên, đó là sự giúp đỡ kịp thời, giảm bớt phần nào căng thẳng, và khiến mọi người cảm thấy ấm lòng. Anh hiểu rằng, trong những lúc khó khăn, sự nhanh nhạy và sẵn sàng giúp đỡ là điều quý giá hơn cả.</div>
+            <div class="gallery">
+                <img src="photos2/photo_29@26-11-2025_15-37-16.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Ghé Thăm Bác Chiều Nay : Một Khoảnh Khắc Ấm Áp Giữa Cuộc SốngChiều hôm nay, tiện đường về, anh ghé qua bệnh viện để xem bác ấy đã ổn hơn chưa. Nhìn bác nằm trên giường, đôi mắt lộ vẻ mệt mỏi và đau đớn, lòng anh không khỏi xót xa. Bác bị bệnh tiểu đường nhiều năm, sức khỏe yếu, mà lại còn gánh vác nhiều nỗi lo cho gia đình.Anh ngồi bên giường, nghe bác tâm sự. Giọng bác trầm buồn: lo cho con trai, lo cho cuộc sống phía trước, nhưng chẳng biết phải làm sao để ổn thỏa. Anh chỉ biết nắm tay bác, nhẹ nhàng động viên:“Bác đừng lo lắng quá, cứ yên tâm chữa trị, giờ mọi chuyện đều có anh Phú lo. Bác suy nghĩ nhiều sẽ ảnh hưởng đến bệnh tình đó.”Bác nghe anh nói, mắt ánh lên sự an tâm, rồi gật đầu. Anh ở lại trò chuyện với bác một lúc, kể vài câu chuyện đời thường, cười đùa một chút để bác quên đi nỗi đau bệnh tật. Không khí trở nên ấm áp hơn giữa căn phòng bệnh viện trắng xóa, lạnh lẽo.Trước khi ra về, anh biếu bác một ít tiền để bồi bổ sức khỏe, vừa là sự giúp đỡ vật chất, vừa là lời động viên tinh thần. Nhìn bác cầm lấy, đôi mắt rạng rỡ hơn, anh thấy lòng mình nhẹ nhõm.Khoảnh khắc này, tuy nhỏ, nhưng lại đầy ý nghĩa : chỉ cần một chút quan tâm, một lời động viên, một hành động giúp đỡ, cũng đủ làm người khác cảm thấy được an ủi, và bản thân anh thấy hạnh phúc vì đã làm được điều gì đó có ích.</div>
+            <div class="gallery">
+                <img src="photos2/photo_30@26-11-2025_15-39-35.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Chiều Nay Gặp Cụ Bà Bán Ổi – Một Bài Học Về Yêu Thương Và Chia SẻChiều nay, lúc đi công việc trên xưởng về, anh bất chợt nhìn thấy một cụ bà ngồi bán ổi giữa trời nắng gắt. Cảnh tượng ấy làm anh dừng xe, tấp vào lề đường, rồi bước xuống, tiến lại gần để hỏi thăm.Cụ bà nhỏ nhắn, gương mặt khắc khổ nhưng ánh mắt hiền hậu. Anh trò chuyện một lúc, mới biết: những quả ổi này đều do bà tự trồng, hái để đi bán lấy tiền mua thuốc cho cụ ông đang bệnh nặng ở nhà. Cụ bà kể, con cháu không ai chịu chăm sóc, thậm chí còn tỏ ra phiền phức vì ông bà già lẩm cẩm. Nghe đến đây, lòng anh nghẹn lại.Anh cảm thấy thương hoàn cảnh của bà, đồng thời giận dữ với kiểu con cái bất hiếu: “Ba mẹ mang nặng đẻ đau, nuôi dưỡng con nên người, vậy mà vẫn có thể vô ơn và nói những lời ấy…”. Trong lòng anh, có ba thứ không thể bỏ được trong cuộc sống: cha mẹ, con cái và quê hương.Anh quyết định mua hết ổi của bà, không chỉ để giúp bà có thêm chút tiền mà còn muốn chia sẻ phần nào gánh nặng. Ngoài ra, anh còn biếu bà thêm một ít tiền để bồi bổ và trang trải chi phí sinh hoạt. Anh nói với bà: “Bà cứ yên tâm, trời nắng nóng thế này, bán mệt thì về nghỉ, đừng lo lắng quá.”Cảnh tượng bà nhận quà, đôi mắt rưng rưng, nụ cười hiền hậu khiến anh thấy lòng ấm áp. Anh nghĩ, quan sống của mỗi người là biết yêu thương và chia sẻ, dù hoàn cảnh khác nhau: có ít thì cho ít, có nhiều thì cho nhiều, miễn là xuất phát từ tấm lòng chân thành.Trên đường về, anh nhìn lại quầy ổi trống, lòng cảm thấy nhẹ nhõm. Một việc nhỏ nhưng chứa đựng tình người, nhắc nhở rằng giữa cuộc sống bộn bề, vẫn luôn có những khoảnh khắc giản dị mà ấm áp, nơi con người được nhắc nhở về lòng trắc ẩn và trách nhiệm với nhau.</div>
+            <div class="gallery">
+                <img src="photos2/photo_31@26-11-2025_15-42-05.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos2/photo_32@26-11-2025_15-42-05.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Sinh Nhật Con Gái Toàn – Tình Bạn Trọn Vẹn Theo Thời GianHôm nay, anh đang ở nhà anh Toàn. Hôm nay là sinh nhật con gái Toàn, nên anh ấy mời hai ba con anh đến ăn cơm chung để cùng mừng tuổi mới của bé. Không khí trong nhà ấm áp, đầy tiếng cười của trẻ nhỏ, mùi cơm nước thơm lừng lan tỏa khắp phòng.Toàn là bạn từ thuở nhỏ của anh. Dù sau này mỗi người đi theo một hướng riêng : anh kinh doanh đồ gỗ, còn cậu ấy làm chủ cửa hàng bán đồ da, quần áo, giày dép, túi xách, nhưng tình bạn vẫn bền chặt. Họ vẫn thường gặp nhau: uống trà, nhâm nhi vài ly rượu, hoặc cùng nhau chơi thể thao, vừa thư giãn vừa trò chuyện tâm sự.Có những lúc anh gặp khó khăn, tưởng chừng gục ngã trước sóng gió của cuộc đời, Toàn không nói nhiều, chỉ ngồi lặng lẽ bên cạnh, nghe anh than vãn, kể lể. Sau đó, cậu mới từ tốn phân tích từng vấn đề, chỉ ra những góc nhìn khác và đưa ra lời khuyên chân thành, giúp anh bình tĩnh lại, thấy mọi chuyện nhẹ nhàng hơn.Lúc vợ anh mất, tinh thần anh suy sụp, Toàn lại càng trở thành điểm tựa. Cậu thường xuyên đến nhà, giúp anh chăm sóc mẹ và con gái, lo liệu mọi việc từ nhỏ đến lớn. Những hành động ấy không lời nhưng lại chứng minh tình bạn thật sự — lúc khó khăn, người bạn không rời bỏ, sẵn sàng đồng hành và chia sẻ gánh nặng.Nhìn Toàn chăm sóc con gái anh, trò chuyện vui vẻ cùng các bé trong bữa tiệc, anh bỗng thấy lòng mình ấm áp vô cùng. Anh tự nhủ, trong cuộc đời này, có những người bạn như thế thật quý giá. Anh cảm ơn ông trời vì đã cho anh một người bạn thật sự trân trọng, người luôn ở bên khi cần, sẵn sàng lắng nghe và chia sẻ.Buổi tiệc sinh nhật hôm nay không chỉ là dịp mừng con gái Toàn thêm tuổi mới, mà còn là dịp nhắc nhở anh về tình bạn bền lâu, sâu sắc, và ý nghĩa của sự đồng hành trong cuộc sống.</div>
+            <div class="gallery">
+                <img src="photos2/photo_33@26-11-2025_15-45-43.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Gặp Cụ Bà Bán Rau Và Quyển Sách Từ Trái TimHôm nay, trên đường về, anh bỗng nhìn thấy một cụ bà ngồi bán rau bên lề đường. Cảnh tượng giản dị giữa phố phường ồn ào khiến anh dừng lại. Anh liền bảo anh Thành tấp xe vào lề, rồi bước xuống, tiến lại gần chỗ cụ ngồi để hỏi han.Anh trò chuyện một lúc và ngỏ ý muốn mua hết chỗ rau của cụ để tiện cho bữa cơm tối. Trong lúc nói chuyện, mắt anh chợt dừng lại ở một quyển sách đặt bên cạnh cụ bà, đang đọc dở. Tò mò, anh mượn xem và nhận ra đó là cuốn “Chia Sẻ Từ Trái Tim – 50 Bài Giảng Nhân Quả Thiết Thực Trong Cuộc Sống” của Sa Môn Thích Pháp Hòa. Anh hỏi cụ:  “Cụ thích đọc sách sao?” Cụ bà mỉm cười, ánh mắt sáng lên:“Ngày còn trẻ, tôi là cô giáo dạy văn, đọc sách là thói quen. Giờ già rồi, thói quen ấy vẫn còn. Mỗi khi đọc sách, tâm hồn mình cảm thấy thanh thản, thư thái, như được nghỉ ngơi giữa cuộc sống bộn bề này. Quyển sách này dạy người đọc sống tỉnh thức, bình an trong tâm hồn.”Ngồi trò chuyện với cụ, nghe những lời giản dị nhưng sâu sắc ấy, anh bỗng thấy cuộc sống này thật thú vị và bình dị đến lạ thường. Giữa phố xá hối hả, giữa những bon chen xô bồ, vẫn có những con người giữ cho mình một khoảng lặng, một tinh thần thanh thản, và niềm vui giản đơn từ những điều nhỏ nhặt.Anh mua hết rau của cụ, biếu thêm một ít tiền để cụ trang trải cuộc sống. Nhưng điều anh trân trọng hơn cả là cuộc trò chuyện nhẹ nhàng, thanh thản, khiến anh nhận ra giá trị thật sự của những điều bình dị : tình người, sự chia sẻ, và khả năng giữ tâm bình an giữa đời thường.Khi rời đi, anh ngoái nhìn lại cụ bà, thấy cụ vẫn say sưa đọc sách, gương mặt thanh thản. Anh mỉm cười và tự nhủ: đôi khi, bình yên trong tâm hồn quan trọng hơn mọi thứ xô bồ ngoài kia.</div>
+            <div class="gallery">
+                <img src="photos2/photo_34@26-11-2025_15-47-47.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Về Quê Khi Bác Năm Mất – Nhớ Người Ấm Áp Một ThờiKhi nghe tin bác mất, anh lập tức thu xếp, đi về quê ngay trong đêm. Bác và gia đình không phải họ hàng thân thích, nhưng với anh và gia đình, bác luôn là người đối xử rất tốt, có nhiều ơn nghĩa sâu nặng với ba mẹ anh.Ngày xưa, nhà bác giàu có lắm, là một phú hộ trong làng. Ba mẹ anh thường đến nhà bác làm mướn. Vì chăm chỉ, chịu khó, ba mẹ anh được bác thương. Anh còn nhớ, mỗi lần trả công, bác âm thầm bốc thêm cho ba mẹ anh vài nắm gạo, lén lút để bác gái không la vì tính bà hơi nghiêm khắc.Khi ba anh mất, bác cũng chính là người cho gia đình mượn tiền lo đám tang, giúp cả nhà vượt qua lúc khó khăn nhất. Sau này, khi anh lên Sài Gòn lập nghiệp, chỉ còn mẹ và em gái ở quê, những lúc anh chưa kịp gửi tiền về, bác lại cho mẹ mượn để lo liệu công việc.Thời gian trôi qua, khi anh dần thành công và có điều kiện dư dả hơn, mỗi lần về quê, anh vẫn qua thăm bác, mang theo những món đồ bổ, chút quà nhỏ, vừa để bày tỏ lòng biết ơn, vừa mong bác thêm sức khỏe. Những lúc đến thăm, nhìn bác đau yếu, anh không khỏi thương xót và xúc động.Bác mất đi, một khoảng trống trong lòng anh như lớn hơn bao giờ hết. Không phải vì bác là người giàu có, mà vì tấm lòng và sự ấm áp của bác dành cho gia đình anh, những kỷ niệm ấy luôn khắc sâu, nhắc nhở anh về tình người, về sự biết ơn và chia sẻ trong cuộc sống.Khi đứng bên mộ bác, anh nhớ lại từng câu chuyện, từng ánh mắt hiền hậu của bác, lòng anh vừa thương vừa biết ơn, tự nhủ sẽ giữ gìn và truyền lại tấm lòng ấy cho con gái và những thế hệ sau.</div>
+            <div class="gallery">
+                <img src="photos2/photo_35@26-11-2025_15-49-28.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos2/photo_36@26-11-2025_15-49-28.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Mua Lô Đất Mới – Chuẩn Bị Hồi Môn Cho Con GáiHôm nay, anh vừa đi xem lô đất mới và ký hợp đồng đặt cọc trước một phần. Khi nào công chứng xong, anh sẽ chuyển đủ tiền cho bên bán.Em có đoán được tại sao anh lại mua lô đất này không? Đây là mảnh đất anh chuẩn bị làm hồi môn cho con gái. Anh chỉ có một cô con gái, nên tất nhiên, anh luôn mong con sẽ có một cuộc sống tốt hơn, ổn định và vững vàng.Anh tự nhủ, tất cả những gì anh có bây giờ đều là kết quả của một đời phấn đấu vượt qua khó khăn, gian khổ và nhiều sóng gió. Vì vậy, một phần muốn dành cho mẹ anh và con gái, một phần muốn giúp đỡ những người nghèo khổ, khó khăn hơn mình. Anh tin rằng làm việc thiện, chia sẻ với người khác sẽ tích góp ân phước cho con sau này.Mảnh đất này nằm ở Quận 3, khu vực trung tâm, giá 10 tỷ đồng. Không chỉ là vị trí đẹp, gần bệnh viện, trường học và chợ, thuận tiện cho sinh hoạt, mà còn rất tiềm năng nếu muốn kinh doanh hoặc buôn bán sau này.Anh đã đóng cọc trước một phần, phần còn lại sẽ chuyển khoản khi hoàn tất thủ tục công chứng. Trong lòng anh, đây không chỉ là một giao dịch bất động sản, mà là một món quà ý nghĩa cho con gái, là sự chuẩn bị cẩn thận để con gái có nền tảng vững chắc cho tương lai.Khi rời khỏi lô đất, anh đứng lại nhìn xung quanh, hình dung con gái lớn lên, có cuộc sống đầy đủ và an yên nơi đây. Anh mỉm cười, lòng nhẹ nhõm, vì ít nhất, một phần ước nguyện về hạnh phúc cho con gái đã được thực hiện.</div>
+            <div class="gallery">
+                <img src="photos2/photo_37@26-11-2025_15-51-53.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Đi Chùa Cùng Mẹ – Niềm Vui Nhỏ Nhưng Quý GiáEm có thường đi chùa không? Ngày rằm và mùng 1, anh đều dành thời gian đưa mẹ đi chùa thắp nhang. Dù sức khỏe mẹ không còn như trước, đi lại khá chậm, nhưng bà vẫn muốn đi, muốn cầu nguyện cho gia đình, người thân luôn bình an và mạnh khỏe.Anh luôn nhường bà từng bước, dìu bà qua những bậc thang, nhặt nhang cẩn thận, lau chùi bàn thờ trước khi thắp nén nhang. Nhìn mẹ nghiêm trang, ánh mắt thành kính hướng lên ban thờ, anh thấy trong lòng một niềm ấm áp khó tả, như thể mọi mệt nhọc, lo toan trong đời đều lắng xuống.Với anh, những khoảnh khắc giản dị ấy thật quý giá. Anh tự nhủ: còn được chăm sóc mẹ ngày nào là may mắn ngày đó. Những lời cầu nguyện của mẹ, những ánh mắt hiền hậu của bà, khiến anh thêm trân trọng tình thân và nhận ra giá trị của sự gắn bó, yêu thương trong gia đình.Sau khi thắp nhang xong, anh cùng mẹ ngồi bên nhau, trò chuyện nhỏ nhẹ, kể về những điều vui buồn trong tuần. Mẹ nhìn anh, nụ cười hiền hậu hiện lên trên gương mặt, và anh thấy lòng mình nhẹ nhõm, hạnh phúc. Đối với anh, không cần những khoảnh khắc xa hoa hay phô trương, chỉ cần được cùng mẹ đi chùa, được chăm sóc bà và nhìn bà bình an, đó đã là niềm vui và may mắn lớn lao trong cuộc sống.</div>
+            <div class="gallery">
+                <img src="photos2/photo_38@26-11-2025_16-14-56.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos2/photo_39@26-11-2025_16-14-56.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos2/photo_40@26-11-2025_16-14-56.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos2/photo_41@26-11-2025_16-14-56.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos2/photo_42@26-11-2025_16-14-56.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Chuẩn Bị Quà Cho Người Thầy – Người Chú Đáng Kính Hôm nay, anh đang chuẩn bị mua một vài ấm pha trà và trà ngon để gửi cho chú. Chú vốn có sở thích uống trà, nên anh cẩn thận lựa chọn nhiều loại trà thượng hạng, cùng với những chiếc ấm pha trà tinh xảo, vừa đẹp mắt vừa tiện dụng. Anh muốn món quà này không chỉ là vật chất, mà còn gửi gắm tấm lòng biết ơn và sự trân trọng dành cho chú.Đối với anh, chú không chỉ là một người thầy, mà còn như một người cha, người bạn và người anh em. Chú đã dạy anh rất nhiều điều về cách sống, cách làm việc, cách đối nhân xử thế. Những lúc khó khăn, chú luôn xuất hiện kịp thời.Anh nhớ những ngày vợ anh mất, anh rơi vào khủng hoảng tinh thần, bế tắc không biết phải làm sao. Chú luôn ở bên, lặng lẽ giúp anh chăm sóc mẹ và con gái, động viên anh đứng dậy, nhìn về phía trước. Rồi đến những lần làm ăn kinh doanh bị thua lỗ, hay lúc dịch bệnh khiến công việc trì trệ, nếu không có chú dang tay giúp đỡ, anh không biết mình có thể chống đỡ và vực dậy được như ngày hôm nay hay không.Chọn xong từng chiếc ấm, từng gói trà, anh đứng lại nhìn chúng, hình dung ánh mắt chú khi nhận quà, hình dung những câu chuyện hai thầy trò sẽ trò chuyện bên tách trà ấm nóng. Anh mỉm cười, thấy trong lòng ấm áp và biết ơn. Món quà nhỏ bé nhưng chứa đầy tấm lòng, như một cách anh muốn nói: “Cảm ơn chú, người đã luôn đồng hành và nâng đỡ con qua mọi khó khăn trong đời.”</div>
+            <div class="gallery">
+                <img src="photos2/photo_43@26-11-2025_16-25-11.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Nhận Quà Lê Hàn Quốc Từ Đối TácHôm nay, anh nhận được mấy hộp lê Hàn Quốc từ một đối tác lâu năm. Nhìn những hộp lê sang trọng được gói cẩn thận, anh biết ngay đây là món quà tinh tế, vừa đẹp mắt vừa chất lượng. Những quả lê căng mọng, tỏa hương thơm nhẹ, ăn thử một miếng đã thấy ngọt thanh, giòn giòn, thật sự rất ngon.Anh liền bảo chị Hoa – kế toán chia đều cho mọi người trong văn phòng thưởng thức. Khi mọi người nếm thử, ai nấy đều tấm tắc khen ngon, vừa khen lê, vừa khen anh đối tác khéo chọn quà. Nhìn mọi người vui vẻ, anh cũng cảm thấy ấm lòng và hạnh phúc, vì được mọi người quý mến, văn phòng lại thêm vui vẻ thân thiện.Anh nghĩ thầm, hầu như lần nào các đối tác hay khách hàng lâu năm ghé thăm công ty cũng đều mang theo quà biếu. Không phải vì bắt buộc, mà bởi tấm lòng trân trọng mối quan hệ, thể hiện sự gắn kết lâu dài. Những món quà tuy nhỏ, nhưng chứa đựng ý nghĩa tinh thần lớn, khiến công việc trở nên gần gũi, ấm áp hơn.Nhìn mọi người cười nói, thưởng thức lê, anh cảm thấy vừa vui vừa biết ơn, và tự nhủ sẽ luôn giữ gìn mối quan hệ tốt đẹp với các đối tác, vì tình cảm, sự tôn trọng và lòng chân thành mới là nền tảng bền vững cho sự hợp tác lâu dài.</div>
+            <div class="gallery">
+                <img src="photos2/photo_44@26-11-2025_16-27-49.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Chuẩn Bị Đồ Cứu Trợ Cho Đồng Bào Miền TrungĐây là số đồ cứu trợ mà bọn anh vừa mua để gửi đến đồng bào miền trung đang chịu ảnh hưởng nặng nề từ lũ lụt. Khi nghe tin, trái tim anh và mọi người trong công ty đều nóng lên, muốn làm gì đó để giúp đỡ.Công ty anh đã vận động toàn thể công nhân viên, mỗi người đóng góp 2 ngày lương để ủng hộ. Ngoài ra, anh còn tự mình bỏ ra một khoản tiền riêng, đồng thời kêu gọi những anh em trong ngành, mỗi người chia sẻ một chút, cùng nhau chuẩn bị những thùng quà, bao gạo, mì, nước uống, chăn mền và vật dụng cần thiết.Bọn anh làm từ thiện hoàn toàn tự phát, không thông qua bất kỳ hội nhóm hay cơ quan nào. Anh luôn tâm niệm rằng, từ thiện phải xuất phát từ trái tim, không cần công khai hay báo cáo, càng giản dị càng chân thành. Anh không muốn khoe khoang hay làm điều gì để người khác phải nể phục, mà chỉ muốn những món quà ấy đến tay người cần một cách nhanh nhất, ấm áp nhất.Khi sắp xếp xong từng thùng hàng, nhìn thành quả trước mắt, anh cảm thấy một niềm vui nhẹ nhàng, ấm áp trong lòng. Dù chỉ là một phần nhỏ so với những khó khăn mà đồng bào đang gặp phải, nhưng anh biết, tấm lòng sẻ chia này sẽ giúp họ vơi bớt một phần khổ cực, và chính điều đó cũng làm trái tim anh thêm bình yên và hạnh phúc.</div>
+            <div class="gallery">
+                <img src="photos2/photo_45@26-11-2025_16-29-27.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Tắc Đường Khi Đi Gặp Đối Tác – Bài Học Về Chữ TínHôm nay, anh đang trên đường đi gặp đối tác, nhưng đường thì tắc cứng. Nhìn đồng hồ, còn khoảng 30 phút nữa là đến giờ hẹn, mà vẫn đang nhích từng chút một trên đường. Anh thở dài, vừa lo vừa sốt ruột, vì trong kinh doanh, giờ giấc và sự chuẩn mực là điều cực kỳ quan trọng.Anh liền rút điện thoại gọi cho đối tác, giải thích tình hình và báo rằng mình vẫn đang trên đường. Anh nhấn mạnh: dù có sự cố tắc đường đột ngột, nhất thiết phải thông báo trước, để đối phương biết và không bị bất ngờ. Trong kinh doanh, chữ tín và thái độ tôn trọng đối tác quan trọng không kém việc hoàn thành hợp đồng.Nhìn ra ngoài cửa kính xe, dòng xe nối dài, anh vừa lái vừa suy nghĩ: đây là lúc cần bình tĩnh, kiên nhẫn và chủ động giải quyết tình huống. Dù muộn vài phút, nhưng việc anh thông báo trước khiến đối tác hiểu và thông cảm, và không làm hỏng hình ảnh uy tín mà anh đã xây dựng bấy lâu.Anh tự nhủ: trong kinh doanh, không chỉ chất lượng sản phẩm quan trọng, mà sự đúng giờ, trách nhiệm và tôn trọng đối tác còn quyết định mối quan hệ lâu dài. Dù chỉ là vài phút trễ, nhưng cách xử lý có thể tạo ra sự khác biệt lớn trong lòng người khác.</div>
+            <div class="gallery">
+                <img src="photos2/photo_46@26-11-2025_16-30-35.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Trở Về Trong Cơn Mưa – Nhớ Gia ĐìnhAnh đang trên đường về nhà, mưa to rơi xối xả, từng giọt mưa nặng hạt vỗ vào kính xe, làm anh phải bật cần gạt liên tục. Hôm nay công việc nhiều, anh bận tới tối muộn, trong lòng vừa mệt vừa thấm thía nỗi nhớ gia đình.Nhìn ra ngoài cửa kính, ánh đèn đường phản chiếu trên những vũng nước, anh bỗng nhớ những khoảnh khắc quây quần bên mẹ và con gái, cùng nhau ăn những món ăn nóng hổi vừa nấu xong. Trong lòng anh thoáng một niềm hạnh phúc giản dị: chỉ cần về nhà, được thấy mẹ cười, con gái ríu rít nói chuyện, được ăn bữa cơm gia đình thôi cũng thấy đời ấm áp rồi.Nhưng anh cũng tự nhủ, vì công việc, vì trách nhiệm với công ty, anh mất nhiều thời gian dành cho mẹ và con gái. Những lúc như thế này, cảm giác vừa hối hận vừa trân trọng thời gian ít ỏi bên gia đình càng rõ ràng. Anh tự hứa sẽ cố gắng tận dụng từng phút, từng giây bên người thân, vì đó mới là thứ quý giá nhất trong cuộc đời.Cơn mưa rơi bên ngoài như nhắc nhở anh: dù bận rộn, gia đình vẫn luôn là điểm tựa, là nơi để trở về và cảm nhận hạnh phúc thực sự.</div>
+            <div class="gallery">
+                <img src="photos2/photo_47@26-11-2025_16-31-54.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Dự Tiệc Cưới – Cơ Hội Kết Nối Quan HệHôm nay, anh đang đi dự tiệc cưới con gái anh Hải, bên Chi cục thuế. Anh Hải là bạn thân lâu năm, đồng thời cũng là người mà anh khá trân trọng và nể mặt. Những dịp như thế này không chỉ là niềm vui chung, mà còn là cơ hội quý giá để xây dựng và duy trì các mối quan hệ xã hội, điều rất cần thiết trong ngành nghề của anh.Trong tiệc cưới, không khí vui tươi rộn ràng, tiếng cười nói, tiếng nhạc du dương lan tỏa khắp sảnh. Anh nhìn xung quanh, thấy rất nhiều người giữ chức vụ quan trọng, có uy tín lớn trong xã hội. Anh tận dụng cơ hội trò chuyện, chào hỏi và kết nối, vừa chúc mừng gia đình anh Hải, vừa tạo thêm những mối quan hệ tốt.Anh luôn tâm niệm rằng, trong công việc, mối quan hệ chân thành và đúng lúc đúng chỗ có thể mở ra nhiều cơ hội. Nhưng điều quan trọng là giữ chữ tín, cư xử lịch sự và tôn trọng mọi người, chứ không phải chỉ chạy theo lợi ích tạm thời.Dù bận rộn trò chuyện và trao đổi, anh vẫn thấy vui vì được chia sẻ niềm vui cùng bạn bè, đồng thời tận dụng thời gian để vun đắp những mối quan hệ quý giá. Những khoảnh khắc giản dị này, vừa kết nối, vừa học hỏi, khiến anh cảm thấy cuộc sống và công việc đều thêm phần ý nghĩa.</div>
+            <div class="gallery">
+                <img src="photos2/photo_48@26-11-2025_16-34-08.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Dự Tiệc Tân Gia – Niềm Vui Khi Sản Phẩm Được Trân TrọngHôm nay, anh đi dự tiệc tân gia nhà anh Thanh, Phó Cục trưởng Cục Hải Quan. Anh Thanh là bạn thân thiết của chú, nên khi anh ấy xây nhà mới và hoàn thiện công trình, anh đã được mời tham gia. Đây không chỉ là dịp vui của bạn bè, mà còn là cơ hội để nhìn thấy sản phẩm của mình được trân trọng và đánh giá cao.Trước đó, khi thi công cho căn nhà, anh đã rất cẩn thận và tỉ mỉ từng chi tiết: từ lắp đặt nội thất, ốp trần, đến lắp cửa, từng chi tiết đều được kiểm tra kỹ lưỡng. Anh luôn nhắc nhở đội thợ của mình: “Chất lượng là uy tín, mẫu mã đẹp là sự tôn trọng khách hàng.”Sau khi hoàn thiện công trình, anh Thanh rất hài lòng, khen thợ khéo tay, sản phẩm chất lượng tốt, mẫu mã đẹp và giá cả hợp lý. Khi dự tiệc tân gia, nghe mọi người xung quanh trò chuyện, khen ngợi nội thất trong nhà, anh thấy trong lòng thật vui và tự hào. Những lời khen không chỉ là sự ghi nhận, mà còn là động lực để anh và đội thợ tiếp tục duy trì chất lượng và uy tín trong những công trình khác.Trong không khí ấm áp, rộn rã của bữa tiệc, anh vừa thưởng thức món ăn, vừa nghĩ về quá trình làm việc tỉ mỉ, chăm chút cho từng chi tiết, và cảm thấy hạnh phúc khi niềm tâm huyết của mình được đánh giá cao và trân trọng. Đây cũng là khoảnh khắc nhắc nhở anh rằng, làm việc bằng tâm, bằng trách nhiệm, rồi sẽ nhận lại sự quý mến và tín nhiệm từ người khác.</div>
+            <div class="gallery">
+                <img src="photos2/photo_49@26-11-2025_16-41-28.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">C</div>
+                    <div class="story-info">
+                        <h3>CÂU CHUYỆN ĐỜI SỐNG</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Để anh gửi cho em cái nàyBức thư này là của một người mẹ tảo tần, hiền hậu, đã run rẩy viết những dòng chữ cuối cùng gửi lại cho các con, các cháu thân yêu của mình.Bà viết rằng mẹ không còn ghi nhớ nổi điều gì nữa, tay đã yếu, đầu đau, xương khớp rã rời, hơi thở ngắn dần. Bà kể bệnh tật dày vò khiến mình mệt mỏi, đau đớn không nguôi. Bà biết rằng thời gian của mình chẳng còn bao lâu nữa.Giữa những cơn đau, bà vẫn không ngừng lo lắng cho con cháu: Các con, các cháu càng sống thì càng khổ cực. Mẹ đi rồi, chỉ mong các con đừng lo, đừng buồn cho mẹ.Bà muốn ra đi thanh thản, nhẹ nhàng, không nợ ai, không oán trách điều gì. Bà dặn các con hãy để tang đơn giản thôi, và đừng tốn kém. Giữa những dòng chữ loang lổ là tình thương vô bờ của người mẹ, dù sắp lìa xa cõi đời, bà vẫn chỉ nghĩ đến con cháu : Lo khi mẹ già yếu, ai sẽ chăm sóc? Ai sẽ dạy dỗ, che chở cho các cháu nhỏ nên người? Ai sẽ thay mẹ giữ lửa trong căn nhà thân thương này?Cuối thư, bà nghẹn ngào viết lời vĩnh biệt: Thôi, các con, các cháu yêu của mẹ, ba vĩnh biệt con cháu. Chúc cả nhà khỏe mạnh, bình an, hạnh phúc. Chào con, chào cháu. Bà đi đây...Thậm chí 6 triệu đồng cuối cùng của cuộc đời mình bà cũng để lại cho con cháu.Nét bút dừng lại giữa trang, như một hơi thở cuối cùng khẽ buôngSau này, khi con cháu đọc lại bức thư ấy, ai cũng rơi nước mắt. Lá thư ấy không chỉ là lời trăng trối, mà còn là một bản tình ca cuối cùng của người mẹ Việt, âm thầm chịu đựng, yêu thương, hi sinh đến tận hơi thở cuối cùng.Tại sao bà lại chọn cái kết đau lòng như vậy? Em có biết không? Vì nghèo đó em, vì nhà nghèo, vì không có tiền, nên cuối cùng vì không muốn con cái cực khổ vì mình nên bà mới chọn kết liễu cuộc đời mình như vậy. Đau thương quá phải không em? Em có biết tại sao anh lưu giữ lại bức thư này không? Vì để nhắc nhở bản thân mình đừng bao giờ để cuộc đời mình xảy ra tình trạng như vậy, không thể sống mãi trọn một kiếp người trong nghèo khổ, trong cảnh thiếu thốn</div>
+            <div class="gallery">
+                <img src="photos2/photo_50@27-11-2025_22-43-57.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">C</div>
+                    <div class="story-info">
+                        <h3>CÂU CHUYỆN ĐỜI SỐNG</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Anh vừa mới đặt 50 phần cơm nước và chút tiền, tối anh và anh Thành về ra công viên anh phát cơm cho mấy cụ già, người đi bán vé số và những người không có nhà để về. Họ phải lang thang trên khắp con phố để xin ăn, kiếm sông qua ngày Họ là những người có hoàn cảnh khó khăn, phải gồng gánh kiếm sống mỗi ngày</div>
+            <div class="gallery">
+                <img src="photos2/photo_51@01-12-2025_19-49-56.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Anh gặp một cô này ở công viên nhặt ve chai, anh mỗi khi đi làm hay vài ngày anh qua lại gửi chút đồ ăn, và chút tiền ăn cho cô ấy Anh hỏi thăm một ngày có kiếm được nhiều không cô chú? Mọi người nói nắng kiếm tiền đủ ăn trong ngày, còn ngày mưa thì ăn mỳ tôm Đối với mọi người thì anh không biết, nhưng với anh thì luôn có suy nghĩ &quot; lá lành đùm lá rách &quot; Chỉ là điều nhỏ nhưng lại cả một niềm vui của họ</div>
+            <div class="gallery">
+                <img src="photos2/photo_52@01-12-2025_19-50-35.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos2/photo_53@01-12-2025_19-50-35.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Anh đi từ thiện, anh không đăng lên trên trang mạng khoe khoang vì anh không cần sự khuyên góp của ai cảAi có lòng biết đến anh thì đi từ thiện cùng anh, nếu không có thời gian thì có thể mua đồ đến anh sẽ đem đến tay từng người khó khăn Tính anh là vậy, người thật sự khó khăn anh bỏ cả số tiền lớn cho họ để họ cố gắng. Nhưng nếu lành lặn khỏe mạnh mà cả ngày đi xin ăn xin mặc thì 1 đồng anh cũng không cho</div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">C</div>
+                    <div class="story-info">
+                        <h3>CÂU CHUYỆN ĐỜI SỐNG</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Giọt Máu, Giọt Yêu ThươngTrưa nay, anh ghé điểm hiến máu tình nguyện ở trung tâm y tế quận để hiến máu. Anh lấy số thứ tự, ngồi chờ trong hàng ghế nhựa. Trước mặt là một hàng dài người đang chờ đến lượt. Có cụ ông tóc bạc, tay run run vẫn kiên nhẫn cầm phiếu đăng ký. Có một cô sinh viên mặc áo đồng phục trường, vừa cười vừa nhắn tin cho bạn. Có vài anh công nhân còn mặc nguyên bộ quần áo lấm lem bụi xưởng, tranh thủ giờ nghỉ trưa để ghé quaAi cũng có cuộc sống riêng, những lo toan riêng, nhưng tất cả lại cùng dừng lại trong chốc lát, để hiến tặng một phần máu của mình cho những người không quen biếtNhìn khung cảnh ấy, anh chợt thấy lòng mình bình yên lạĐến lượt mình, anh ngồi xuống chiếc ghế bọc da, lắng nghe nhân viên y tế hướng dẫn. Mọi thứ diễn ra nhẹ nhàng, chỉ có tiếng bơm kim loại khẽ va chạm và mùi thuốc sát trùng quen thuộc. Khi mũi kim chạm vào tay, anh bất giác nghĩ đến con gáiAnh chợt nhớ năm xưa, khi vợ anh sinh con gái, bị mất máu nhiều, chính những giọt máu của người xa lạ đã giúp cô vượt qua cơn nguy kịch. Khi ấy, anh đã thầm hứa, rằng một ngày nào đó, mình cũng sẽ làm điều tương tự cho người khácVà hôm nay, lời hứa ấy trở thành hiện thựcMáu chảy vào túi, từng giọt đỏ tươi. Anh nghĩ, có thể một phần máu của anh sẽ chảy trong cơ thể của một đứa trẻ nào đó, cũng đang nằm trên giường bệnh, như con gái anh từng một lần chờ đợi phép màuNghĩ vậy thôi, mà tim anh thấy ấm lạKhông có gì to tát cả, chỉ là vài trăm mililit máu, vài phút ngồi chờ, một chút mỏi tay sau đó.Nhưng với ai đó, có thể là sự sống, là thêm một cơ hội được ôm người thân, được cười, được lớn lênVì giữa cuộc sống bộn bề này, nơi người ta đôi khi quên mất cách mỉm cười với nhau, vẫn còn những điều bình dị và đẹp đẽ đến thế những người sẵn sàng cho đi, lặng lẽ, không cần được biết tên, không cần lời cảm ơnAnh nghĩ, thế giới này vẫn còn rất nhiều điều đáng để tin yêu, chỉ cần ta chịu dừng lại một chút và lắng nghe nhịp tim của chính mình</div>
+            <div class="gallery">
+                <img src="photos2/photo_54@02-12-2025_15-13-36.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="lightbox" id="lightbox">
+        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+        <span class="lightbox-nav lightbox-prev" onclick="changeImage(-1)">&#10094;</span>
+        <img id="lightbox-img" src="" alt="">
+        <span class="lightbox-nav lightbox-next" onclick="changeImage(1)">&#10095;</span>
+        <div class="lightbox-counter" id="lightbox-counter"></div>
+    </div>
+    
+    <script>
+        let currentImages = [];
+        let currentIndex = 0;
+        
+        function openLightbox(src) {
+            // Lấy tất cả ảnh từ gallery chứa ảnh được click
+            const clickedImg = document.querySelector(`img[src="${src}"]`);
+            const gallery = clickedImg.closest('.gallery');
+            currentImages = Array.from(gallery.querySelectorAll('img')).map(img => img.src);
+            currentIndex = currentImages.indexOf(src);
+            
+            document.getElementById('lightbox').classList.add('active');
+            document.getElementById('lightbox-img').src = src;
+            updateCounter();
+        }
+        
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+        }
+        
+        function changeImage(direction) {
+            currentIndex += direction;
+            if (currentIndex < 0) currentIndex = currentImages.length - 1;
+            if (currentIndex >= currentImages.length) currentIndex = 0;
+            
+            document.getElementById('lightbox-img').src = currentImages[currentIndex];
+            updateCounter();
+        }
+        
+        function updateCounter() {
+            document.getElementById('lightbox-counter').textContent = `${currentIndex + 1} / ${currentImages.length}`;
+        }
+        
+        document.getElementById('lightbox').addEventListener('click', function(e) {
+            if (e.target === this) closeLightbox();
+        });
+        
+        // Phím tắt điều hướng
+        document.addEventListener('keydown', function(e) {
+            if (!document.getElementById('lightbox').classList.contains('active')) return;
+            
+            if (e.key === 'ArrowLeft') changeImage(-1);
+            if (e.key === 'ArrowRight') changeImage(1);
+            if (e.key === 'Escape') closeLightbox();
+        });
+    </script>
+    
+    <!-- Marquee quảng cáo -->
+    <div style="position:fixed;bottom:0;left:0;width:100%;background:linear-gradient(90deg,#ff6b6b,#feca57,#48dbfb,#ff9ff3);background-size:300% 100%;animation:gradientMove 3s ease infinite;padding:15px 0;z-index:1000;overflow:hidden;box-shadow:0 -5px 20px rgba(0,0,0,0.3);">
+      <style>
+        @keyframes gradientMove{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+        @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+        .marquee-content{display:flex;animation:scroll 20s linear infinite;white-space:nowrap;}
+        .marquee-text{font-size:1.2rem;font-weight:bold;color:white;text-shadow:2px 2px 4px rgba(0,0,0,0.5);padding:0 50px;display:inline-block;}
+      </style>
+      <div class="marquee-content">
+        <span class="marquee-text">⭐ @ChenGuangLi - Zalo - Facebook - Javascrips - Python - Bot Telegram - Data khách hàng - Dịch vụ Facebook ⭐</span>
+        <span class="marquee-text">⭐ @ChenGuangLi - Zalo - Facebook - Javascrips - Python - Bot Telegram - Data khách hàng - Dịch vụ Facebook ⭐</span>
+        <span class="marquee-text">⭐ @ChenGuangLi - Zalo - Facebook - Javascrips - Python - Bot Telegram - Data khách hàng - Dịch vụ Facebook ⭐</span>
+        <span class="marquee-text">⭐ @ChenGuangLi - Zalo - Facebook - Javascrips - Python - Bot Telegram - Data khách hàng - Dịch vụ Facebook ⭐</span>
+      </div>
+    </div>
+
+<!-- QUẢNG CÁO -->
+<div style="position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#6c63ff,#00d4aa);padding:12px 20px;text-align:center;z-index:9999;box-shadow:0 -4px 20px rgba(0,0,0,0.5);">
+  <marquee behavior="scroll" direction="left" scrollamount="8" style="color:#fff;font-weight:700;font-size:15px;font-family:Arial,sans-serif;">
+    ⭐ @ChenGuangLi - Zalo - Facebook - Javascrips - Python - Bot Telegram - Data khách hàng - Dịch vụ Facebook ⭐
+  </marquee>
+</div>
+
+</body>
+</html>

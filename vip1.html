@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Câu Chuyện VIP 1</title>
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-card: #1a1a2e;
+            --accent: #6c63ff;
+            --text: #ffffff;
+            --text-dim: #a0a0b0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a0a2e 100%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, var(--accent), #ff6b9d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .story-card {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .story-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(108, 99, 255, 0.3);
+        }
+        
+        .story-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #ff6b9d);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        
+        .story-info h3 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .story-date {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+        
+        .story-text {
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: var(--text-dim);
+        }
+        
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .gallery img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        .gallery img:hover {
+            transform: scale(1.08) translateY(-5px);
+            box-shadow: 0 12px 30px rgba(108, 99, 255, 0.5);
+            filter: brightness(1.1);
+        }
+        
+        /* Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .lightbox.active {
+            display: flex;
+        }
+        
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+        }
+        
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            font-size: 50px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 1001;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            backdrop-filter: blur(10px);
+        }
+        
+        .lightbox-close:hover {
+            background: rgba(255,255,255,0.2);
+            transform: rotate(90deg);
+        }
+        
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 50px;
+            color: white;
+            cursor: pointer;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+            user-select: none;
+        }
+        
+        .lightbox-nav:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .lightbox-prev {
+            left: 30px;
+        }
+        
+        .lightbox-next {
+            right: 30px;
+        }
+        
+        .lightbox-counter {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 18px;
+            background: rgba(0,0,0,0.6);
+            padding: 10px 25px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body>
+<script>if(!sessionStorage.getItem('activeKey')||!sessionStorage.getItem('activeTelegram'))window.location.href='login.html';</script>
+
+<nav style="max-width:1200px;margin:18px auto;display:flex;justify-content:center;gap:12px;position:relative;flex-wrap:wrap;z-index:100;">
+  <a href="index.html" style="text-decoration:none;padding:8px 18px;border-radius:6px;font-weight:600;background:#ffd54a;color:#222;border:none;margin:4px;transition:background 0.2s;cursor:pointer;">Trang chủ</a>
+  <a href="vip1.html" style="text-decoration:none;padding:8px 18px;border-radius:6px;font-weight:600;background:#d35400;color:#fff;border:none;margin:4px;transition:background 0.2s;cursor:pointer;">Câu Chuyện</a>
+  <a href="vip2.html" style="text-decoration:none;padding:8px 18px;border-radius:6px;font-weight:600;background:#ffd54a;color:#222;border:none;margin:4px;transition:background 0.2s;cursor:pointer;">Câu Chuyện</a>
+  <a href="shop.html" style="text-decoration:none;padding:8px 18px;border-radius:6px;font-weight:600;background:#ffd54a;color:#222;border:none;margin:4px;transition:background 0.2s;cursor:pointer;">Shop Tài Khoản</a>
+  <a href="marketplace.html" style="text-decoration:none;padding:8px 18px;border-radius:6px;font-weight:600;background:#ffd54a;color:#222;border:none;margin:4px;transition:background 0.2s;cursor:pointer;">Appweb</a>
+  <a href="vip3.html" style="text-decoration:none;padding:8px 18px;border-radius:6px;font-weight:600;background:#ffd54a;color:#222;border:none;margin:4px;transition:background 0.2s;cursor:pointer;">Đang phát triển</a>
+</nav>
+
+    <div class="container">
+        <h1>📖 Câu Chuyện VIP 1</h1>
+        <div class="stories-grid">
+            
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">C</div>
+                    <div class="story-info">
+                        <h3>CÂU CHUYỆN CÔNG VIỆC</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Ký Hợp Đồng – Tâm Huyết Trong Mỗi Sản PhẩmHôm nay, anh đang ngồi tại một quán cà phê gần trung tâm thành phố, chuẩn bị ký hợp đồng thiết kế và sản xuất 50 bộ bàn ghế gỗ cho một nhà hàng hải sản mới mở. Vị khách hàng này rất kỹ tính, từ kiểu dáng, chất liệu, đến màu sắc gỗ, tất cả đều phải hài hòa với không gian và phong cách của nhà hàng. Anh biết, trong nghề này, ngoài sản phẩm tốt, còn phải hiểu sở thích và mong muốn của khách.Trong lúc ký hợp đồng, anh cùng khách hàng trao đổi từng chi tiết: đường vân gỗ, góc bo, kiểu chân bàn, độ dày mặt ghế, thậm chí cả loại sơn và lớp phủ chống ẩm để đảm bảo bền đẹp theo thời gian. Anh lắng nghe, ghi chú cẩn thận và đưa ra các giải pháp sao cho vừa thẩm mỹ, vừa bền bỉ.Anh luôn tâm niệm, mỗi đơn hàng dù lớn hay nhỏ đều phải hoàn thành đúng tiến độ, đúng yêu cầu khách hàng. Khi bắt tay vào sản xuất, anh nhắc đội thợ phải tập trung tối đa, đặt tâm vào từng sản phẩm, từ việc lựa chọn nguyên liệu đến từng mối ghép, từng lớp sơn. Ngoài chất lượng, chữ tín là điều quan trọng nhất: mọi hợp đồng đều có cam kết giao đúng hạn, nếu trễ hoặc sản phẩm không đạt, công ty sẽ phải chịu bồi thường một phần hợp đồng, có thể là vài phần trăm giá trị hợp đồng.Nhìn vị khách hàng gật gù hài lòng khi đặt bút ký, anh thấy vừa hứng khởi vừa trách nhiệm. Mỗi hợp đồng, với anh, không chỉ là kinh doanh, mà còn là niềm tự hào về tâm huyết, uy tín và chất lượng sản phẩm mà anh và đội thợ tạo ra.</div>
+            <div class="gallery">
+                <img src="photos1/photo_1@26-11-2025_18-45-13.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Tai Nạn Công Việc : Chăm Sóc Nhân Viên Như Người ThânHôm nay, vừa bước chân vào công ty, anh nhận được tin từ anh Quang báo anh Khoa, thợ điêu khắc, bị máy cắt vô tình cắt trúng tay. Lúc nghe tin, tim anh như thắt lại, vừa lo vừa hoảng. Ngay lập tức anh nói anh Thành chở anh Khoa đến bệnh viện để xử lý vết thương.May mắn là vết cắt hơi sâu nhưng không ảnh hưởng lâu dài đến tay. Bác sĩ khâu 6 mũi, kê thuốc và dặn cần nghỉ ngơi, chăm sóc vết thương. Nghe tình hình cụ thể, anh cảm thấy nhẹ nhõm hơn rất nhiều, nhưng vẫn lo lắng và theo sát tiến trình hồi phục.Anh luôn tâm niệm rằng nhân viên là như người thân trong gia đình, họ làm việc hết lòng, cống hiến cho công ty, nên khi có sự cố, công ty phải hỗ trợ tối đa. Anh lập tức nhắc bộ phận nhân sự kiểm tra bảo hiểm y tế và bảo hiểm xã hội, đảm bảo quyền lợi cho anh Khoa.Ngoài việc chi trả toàn bộ chi phí điều trị, thuốc men và cho anh nghỉ dưỡng vết thương, anh còn hỗ trợ vé máy bay để anh Khoa về Hải Phòng, tiện cho vợ và con gái chăm sóc. Anh nhắc nhở toàn bộ đội ngũ, mỗi khi có nhân viên mới vào công ty, phải ngay lập tức làm thẻ bảo hiểm y tế và bảo hiểm xã hội, để mọi người an tâm làm việc.Đây không chỉ là trách nhiệm của một người lãnh đạo, mà còn là cách thể hiện tình người, sự quan tâm và trân trọng những người đã đồng hành cùng mình trên con đường công việc.</div>
+            <div class="gallery">
+                <img src="photos1/photo_2@26-11-2025_18-58-01.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">C</div>
+                    <div class="story-info">
+                        <h3>CÂU CHUYỆN CÔNG VIỆC</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Lắp Đặt Hệ Thống PCCC – Bảo Vệ Con Người Và Uy Tín Công TyHôm nay anh trực tiếp giám sát việc lắp đặt hệ thống phòng cháy chữa cháy ( PCCC ) tại xưởng. Trước mặt anh là bộ điều khiển tổng, nơi kết nối toàn bộ cảm biến khói, còi báo động và hệ thống phun nước tự động. Khi nhìn vào hệ thống này, anh cảm thấy yên tâm hơn, vì từng thiết bị nhỏ đều có thể là thứ bảo vệ tính mạng và tài sản của mọi người.Công ty anh chuyên sản xuất và gia công đồ gỗ. Mỗi ngày xưởng vận hành máy cắt, máy chà, máy sơn PU, bụi gỗ bay dày trong không khí, hóa chất thì luôn ở mức nguy hiểm. Anh hiểu rất rõ rằng môi trường như vậy tiềm ẩn nguy cơ cháy nổ cực kỳ cao, chỉ một sơ suất nhỏ cũng có thể gây hậu quả lớn.Chính vì vậy, sáng hôm qua anh đã họp toàn bộ quản lý và quyết định đầu tư lắp đặt thêm hệ thống PCCC hiện đại, bao gồm cảm biến khói, hệ thống phun nước tự động đặt ở những khu vực trọng yếu như kho gỗ, phòng sơn, khu vực máy cắt. Mọi thứ đều phải được lắp đặt đúng tiêu chuẩn và kiểm tra nghiêm ngặt.Không chỉ vậy, anh còn yêu cầu tổ chức tập huấn PCCC định kỳ cho toàn bộ công nhân, từ cách sử dụng bình chữa cháy, cách xử lý khi có sự cố đến việc thoát hiểm đúng quy trình. Anh muốn mọi người không chỉ biết nghề, mà còn phải biết cách bảo vệ chính mình.Anh luôn nói với mọi người rằng: “Lắp hệ thống này không phải vì đã từng xảy ra cháy, mà vì anh muốn chủ động bảo vệ con người, tài sản và uy tín của công ty.”Việc đầu tư hệ thống PCCC không chỉ giúp công ty hoạt động bài bản hơn, mà còn giúp công nhân an tâm mỗi khi bước chân vào xưởng. Anh muốn họ cảm thấy rằng “Nơi mình làm việc là một nơi an toàn. Ở đây, mạng sống của mình được tôn trọng.”Nhìn những thiết bị được lắp đặt ngay ngắn, đội kỹ thuật làm việc khẩn trương, anh thấy thật sự hài lòng. Vì đôi khi, không phải những thứ tạo ra lợi nhuận mới quan trọng, mà chính những điều thầm lặng như thế này mới là nền tảng vững chắc cho một doanh nghiệp tồn tại lâu dài.</div>
+            <div class="gallery">
+                <img src="photos1/photo_3@26-11-2025_19-22-28.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">C</div>
+                    <div class="story-info">
+                        <h3>CÂU CHUYỆN CÔNG VIỆC</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Giao Sản Phẩm Cho Moka Café – Giữ Chữ Tín Là Giữ Cả Con Đường Làm ĂnChiều nay, đội vận chuyển bên anh vừa hoàn thành việc giao lô bàn ghế mới cho quán Moka Café ở Bình Thạnh. Đây là khách hàng quen nhưng khá kỹ tính, mà đợt này lại là hàng gấp, bởi gần Tết Dương ai cũng muốn hoàn thiện mặt bằng để kịp khai trương hoặc tăng lượng khách.Khoảng từ đầu tháng đến giờ, lịch sản xuất và giao hàng của công ty dày đặc. Hầu như khách nào cũng dặn một câu giống nhau: “Anh ơi, cố gắng giúp em giao trước Tết nhé!”. Nên anh và anh em trong xưởng gần như chạy hết công suất, sắp xếp tăng ca liên tục để kịp tiến độ.Khi xe tải chở bàn ghế đến nơi, chủ quán ra kiểm tra, nhìn từng chiếc ghế, từng đường nét gỗ, rồi gật đầu khen: “Hàng đẹp quá anh, đúng như hình bên anh gửi luôn.” Nghe khách hài lòng như vậy, anh thấy nhẹ cả người. Bao công sức của anh em trong xưởng mấy ngày qua như được đền đáp.Anh luôn nói với mọi người trong công ty rằng: “Làm kinh doanh, quan trọng nhất là chữ tín. Nhưng chữ tín phải đi liền với chất lượng.”Dù là một chiếc bàn nhỏ hay đơn hàng lớn, anh đều yêu cầu thợ phải đặt hết tâm vào sản phẩm, như đang làm một tác phẩm nghệ thuật chứ không phải làm hàng cho xong.Có lẽ vì tư duy đó mà việc kinh doanh của anh luôn thuận lợi. Nhiều khách hàng sau khi hợp tác với anh, nhận hàng xong đều giới thiệu bạn bè, người quen đến công ty tham khảo mẫu, đặt đóng thêm. Anh không cần quảng cáo quá nhiều, bởi sản phẩm tự nói lên tất cả.Và chính nhờ cái tâm trong nghề, từng mối quan hệ, từng khách hàng mới trở thành những người bạn đồng hành lâu dài.</div>
+            <div class="gallery">
+                <img src="photos1/photo_4@26-11-2025_19-44-05.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Hoàn Thành Tác Phẩm: “Phu Thê Viên Mãn” – Khi Nghệ Thuật Gắn Liền Với Một Tình Yêu Đầy Nhân NghĩaChiều nay, xưởng bên anh vừa hoàn thiện xong tác phẩm gỗ “Phu Thê Viên Mãn” một trong những mẫu tranh mà anh luôn dành sự kỹ lưỡng và tâm huyết đặc biệt. Tác phẩm vừa được đem ra ánh sáng, gỗ hương đỏ ánh lên màu sắc trầm ấm, từng đường vân mượt mà như chính hơi thở của gỗ. Em nhìn vào sẽ thấy ngay sự uyển chuyển, hài hòa, biểu tượng cho tình yêu bền chặt, hôn nhân hạnh phúc, thủy chung, gắn bó keo sơn của đôi vợ chồng.Người ta thích tranh này không chỉ vì vẻ đẹp trang trí, mà còn vì ý nghĩa phong thủy. Gỗ hương vốn là loại gỗ quý: thơm bền, chắc khỏe, vân đẹp như nước chảy, tượng trưng cho tình yêu lâu dài, vĩnh cửu, không phai theo năm tháng.Nhưng điều khiến anh xúc động nhất không phải là giá trị nghệ thuật, mà là câu chuyện đằng sau người khách đã đặt bức tranh này.Một chuyện tình đẹp hơn cả tranh. Hôm đó khi anh trao đổi về mẫu mã, anh khách, vẻ ngoài phong độ, nói chuyện chín chắn, chợt im lặng một lúc rồi kể rằng: “Anh đặt bức tranh này để tặng vợ anh. Quà kỷ niệm.”Anh bất ngờ, vì ít ai đặt tranh lớn bằng gỗ quý chỉ để làm quà bất ngờ. Nhưng khi người đàn ông ấy kể tiếp thì anh hiểu: Anh chị yêu nhau từ thời còn học sinh. Lúc đó nghèo lắm, bữa cơm hai người chia nhau chỉ có cơm trắng với ít rau luộc, đôi khi sang lắm mới có nửa cái bắp luộc. Những năm đầu lập nghiệp, chị là người âm thầm đứng sau, lo từng bữa cơm, từng cái áo, để chồng yên tâm gầy dựng sự nghiệp. Rồi mọi cố gắng được đền bù. Gia đình anh chị giờ giàu có, sung túc, con cái trưởng thành, cuộc sống đủ đầy. Nhưng đời đâu ai đoán được chữ “ngờ”… Năm ngoái, chị phát hiện mắc một căn bệnh hiểm nghèo. Trong lúc kể, giọng anh khách nghẹn lại:“Ngày xưa cô ấy là người chống lưng cho anh. Giờ đến lượt anh nắm tay cô ấy mà đi tiếp.”Anh nghe mà thật sự nể người đàn ông này, cái cách anh ta yêu vợ, trân trọng quá khứ, giữ gìn tình nghĩa, giống như cách người thợ giữ từng đường nét trên gỗ, không để nó bị sứt mẻ hay cẩu thả.Bức tranh là món quà dành cho người phụ nữ đã cùng anh đi hết tuổi trẻ.Khi tác phẩm “Phu Thê Viên Mãn” hoàn thành, nhìn vào anh còn cảm nhận được nhiều hơn ý nghĩa ban đầu: Nó không chỉ là tượng trưng cho hạnh phúc, mà là lời tri ân của một người chồng dành cho người vợ đã hy sinh gần như cả thanh xuân của mình. Anh nghĩ, có những người đàn ông giàu có thật đấy, nhưng không phải ai cũng giàu tình nghĩa như vậy.Và khi anh gói bức tranh lại để chuẩn bị giao cho khách, trong lòng anh bỗng thấy rất nhẹ, rất ấm giống như vừa may mắn được nghe một câu chuyện đẹp giữa cuộc đời đầy xô bồ này.</div>
+            <div class="gallery">
+                <img src="photos1/photo_5@26-11-2025_19-51-55.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Mối Quan Hệ – Khi Một Lời Giúp Đỡ Quý Hơn Cả Tiền BạcChiều nay, sau khi xử lý xong công việc ở công ty, anh ghé đến nhà anh Quân, Phó Chi cục trưởng chi cục kiểm lâm. Anh đến không phải vì chuyện công việc nữa, mà là để nói một lời cảm ơn tử tế sau những ngày sóng gió vừa qua.Đợt hàng nguyên vật liệu gỗ nhập từ Lào về xưởng vừa rồi thật sự là một cú sốc đối với anh. Chỉ vì trong lô hàng có vài chủng loại gỗ quý nằm trong danh mục nghiêm cấm khai thác, dù phía đối tác nói hoàn toàn hợp pháp, nhưng khi qua cửa kiểm lâm thì lập tức bị giữ lại để điều tra.Hàng bị chặn, xưởng đình trệ, công nhân chờ nguyên liệu, hợp đồng thì đang chờ tiến độ. Mỗi ngày trôi qua là anh lại sốt ruột như lửa đốt. Anh chạy vạy khắp nơi, tìm đủ mọi cách, nhờ nhiều người có chức có quyền xem xét giúp. Nhưng ai nghe đến chuyện liên quan đến gỗ quý thì đều lắc đầu, ngại dính vào, không dám đứng ra.Thời điểm đó thật sự anh rất áp lực. Nhưng cuối cùng, sự may mắn cũng đến. Nhờ anh Quân, người bạn thân thiết lâu năm của chú anh đứng ra hỗ trợ. Không phải vì lợi ích gì, mà vì nể tình nghĩa với chú, và vì hiểu anh là người làm ăn đàng hoàng, rõ ràng, không buôn bán bất hợp pháp. Anh Quân trực tiếp liên hệ, xem hồ sơ, xác minh nguồn gốc, làm việc với các bộ phận liên quan. Sau khi xác nhận lô hàng không có vấn đề nghiêm trọng, thủ tục được giải quyết, và anh được nhận lại nguyên vật liệu để mang về xưởng.Khi biết tin lô hàng được thả, anh thở phào như trút được cả tảng đá lớn trên ngực. Chiều nay đến nhà anh Quân, anh mang theo một chai Macallan làm quà biếu. Không phải vì giá trị của nó, mà vì đó là loại rượu mà anh biết anh Quân yêu thích. Một món quà mang theo lời cảm ơn chân thành hơn cả ngàn lời nói. Vừa thấy anh đến, anh Quân cười xởi lởi:“Chuyện nhỏ có gì đâu. Nể chú của em nên anh giúp, chứ em làm ăn đàng hoàng thì anh không ngại.” Anh nghe mà thấy ấm lòng. Trong công việc, đặc biệt là ngành gỗ, ngành dễ đụng chạm tới pháp lý, không phải lúc nào tiền cũng giải quyết được vấn đề. Có tiền mà không có quan hệ, đôi khi chẳng làm được gì.Còn một mối quan hệ tốt, chân thành, đôi khi lại cứu mình đúng lúc nhất.Trên đường từ nhà anh Quân về, anh nghĩ mãi: Trong thời buổi này, làm ăn không chỉ cần giỏi, cần vốn, cần kinh nghiệm… mà còn cần cách sống.Sống sao để khi mình gặp khó, người ta sẵn lòng mở lời giúp đỡ.Sống sao để chữ “tình nghĩa” đi trước chữ “tiền bạc”. Đó cũng là thứ anh luôn giữ gìn trong công việc và cuộc đời mình.</div>
+            <div class="gallery">
+                <img src="photos1/photo_6@26-11-2025_19-57-50.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Giám Sát Công Trình – Khi “Chữ Tín” Luôn Đặt Trên Tất CảSáng nay, sau khi họp công ty xong, anh chạy thẳng xuống công trình nhà anh Thanh ở Bình Thạnh. Anh Thanh hiện là Phó Cục trưởng của Cục Hải Quan, cũng là một người bạn thân thiết của chú anh nên anh luôn coi đây là một công trình quan trọng, gần như “VIP” trong danh sách khách hàng của công ty.Ngôi nhà vừa được xây xong phần thô, và bên anh phụ trách toàn bộ phần hoàn thiện nội thất bên trong: Lắp đặt cửa chính, cửa sổ, ốp trần, ốp tường, lắp đặt tủ bếp, tủ quần áo, hệ thống nội thất gỗ cao cấp, các hạng mục trang trí theo phong cách riêng của gia chủĐặc biệt, yêu cầu từ phía khách là: Hoàn thành trước Tết Dương Lịch.Tức là mọi hạng mục phải gấp rút, chạy tiến độ từng ngày.Đối với anh, làm nhanh không có nghĩa là làm ẩu. Nhanh nhưng phải chuẩn. Gấp nhưng phải đẹp.Vừa đến nơi, anh đã đi một vòng kiểm tra từ tầng trệt đến các tầng trên. Anh nhìn từng cánh cửa, từng mép gỗ, từng mối ghép… chỉ cần chỗ nào chưa đúng kỹ thuật hoặc màu gỗ chưa đều, anh nhắc ngay.Có chỗ ốp lam gỗ cầu thang chưa khít, anh yêu cầu tháo ra làm lại.Có cánh cửa phòng ngủ bị lệch nhẹ vài ly, anh bảo chỉnh lại ngay.Có mảng trần giật cấp chưa sắc nét, anh gọi thợ xuống sửa lại toàn bộ.Người ta thường nói anh khó tính, nhưng thật ra anh chỉ muốn sản phẩm đến tay khách phải hoàn hảo nhất, đúng giá trị mà họ tin tưởng giao cho anh. Đặc biệt là khách quen, khách thân của chú, anh lại càng phải làm cho chỉnh chu hơn nữa.Nhiều khi thợ làm xong tưởng ổn rồi, nhưng anh đến xem lại vẫn phát hiện ra lỗi nhỏ, yêu cầu làm lại. Thợ anh quen tính anh rồi, không ai dám làm qua loa.Làm nghề này là nghề đo từng ly đối từng chi tiết. Chỉ cần một lỗi nhỏ cũng ảnh hưởng đến cả công trình.Anh đứng giữa công trình đang thi công, tiếng máy cưa, tiếng búa, tiếng thợ trò chuyện rộn ràng… nhưng anh lại cảm thấy vui.Bởi vì mỗi công trình hoàn thành, nó giống như một “đứa con tinh thần” của chính anh vậy.Anh biết, nếu làm tốt công trình này, không chỉ giữ được chữ tín với anh Thanh, mà còn mở ra thêm nhiều cơ hội khác.Trong nghề của anh, người ta chọn mình không chỉ vì tay nghề, mà còn vì cách mình giữ lời, giữ chữ tín và giữ cái tâm nghề.</div>
+            <div class="gallery">
+                <img src="photos1/photo_7@26-11-2025_20-04-58.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">C</div>
+                    <div class="story-info">
+                        <h3>CÂU CHUYỆN CÔNG VIỆC</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Nhập Gỗ Căm Xe – Chuẩn Bị Nguyên Liệu Cho Mùa Cuối NămChiều nay, khi xe container lô gỗ mới nhập vừa lùi vào bãi xưởng, anh vừa tầm đi ngang qua. Mùi gỗ thoang thoảng trong không khí, nhìn từng thanh gỗ dài, màu sẫm đẹp, vân gỗ chạy mịn màng, anh chỉ liếc qua là biết ngay: Đây là gỗ căm xe, loại gỗ chuyên dùng để làm cửa lớn, làm cửa sổ, ốp tường và chế tác salon nội thất cao cấp.Gỗ căm xe nổi tiếng bởi độ bền, chắc, nặng và khả năng chịu thời tiết tốt, đã qua xử lý kỹ càng nên ít cong vênh. Những công trình lớn, nhà biệt thự hoặc khách hàng VIP đều thích dùng loại này.Anh kiểm tra từng kiện một: độ ẩm, kích thước, màu sắc, bề mặt… vì đây là lô hàng giá trị cao, nhập khẩu trực tiếp, mà chưa tính tiền thuế nhập khẩu và thuế VAT trong nước đã là con số rất lớn rồi.Càng về cuối năm, khách đặt hàng càng dồn dập. Anh có ngày nhận vài ba hợp đồng liền, khách yêu cầu giao trước Tết Dương, rồi kịp Tết Âm.Vì vậy anh phải chủ động nhập nguyên vật liệu liên tục, đảm bảo xưởng lúc nào cũng có đủ gỗ để sản xuất. Làm nghề gỗ mà để xảy ra tình trạng: “Có thợ, có máy mà không có gỗ để làm”…thì vừa chậm tiến độ, vừa mất uy tín với khách. Nên anh luôn tính toán cẩn thận: nhập đúng loại, đúng quy cách, đúng số lượng thừa còn hơn thiếu. Sự tin tưởng của khách không đến từ lời nói, mà đến từ minh bạch. Tất cả nguyên vật liệu bên anh đều có : Hóa đơn chứng từ rõ ràng, nguồn gốc xuất xứ minh bạch, hồ sơ kiểm lâm kiểm định đầy đủ. Bởi vậy, nhiều năm rồi, khách hàng cũ vẫn quay lại đặt hàng, còn giới thiệu thêm bạn bè người thân cho anh.Anh hiểu rằng trong thời buổi thị trường cạnh tranh khốc liệt, ai cũng than khó khăn… thì cái giữ chân khách không phải quảng cáo hay lời nói hay ho, mà chính là: Chữ tín – Chữ tâm – và sự rõ ràng trong công việc.Anh làm nghề gần hai chục năm, càng đi xa càng thấy : Một doanh nghiệp có thể không lớn, nhưng tuyệt đối không được đánh mất uy tín.</div>
+            <div class="gallery">
+                <img src="photos1/photo_8@26-11-2025_20-20-57.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Khen Thưởng Nhân Viên – Khi Thành Công Đến Từ Tập ThểSáng nay, anh có buổi họp quan trọng với toàn bộ quản lý các phòng ban trong công ty. Không khí buổi họp ban đầu khá nghiêm túc, nhưng khi anh bắt đầu chia sẻ kết quả kinh doanh quý vừa rồi, ai nấy đều thấy phấn khởi.Doanh số quý này tăng trưởng rõ rệt, vượt chỉ tiêu đề ra, thành quả không chỉ của riêng anh, mà là công sức của cả tập thể: từ thợ làm trong xưởng, đến nhân viên văn phòng, kế toán, kinh doanh, kỹ thuật… ai cũng góp một phần vào đó.Anh nhìn mọi người rồi nói: “Anh muốn từ quý này trở đi, công ty sẽ có chương trình khen thưởng nhân viên xuất sắc rõ ràng hơn. Ai làm tốt, có đóng góp nổi bật sẽ nhận phần thưởng xứng đáng. Không chỉ bằng lời khen, mà bằng những phần quà giá trị.”Nghe đến đây, cả phòng ai cũng vui. Bởi vì ai đi làm cũng cần sự ghi nhận, mà đặc biệt là sự ghi nhận từ người lãnh đạo. Kế hoạch du lịch cuối năm, món quà tinh thần cho anh emSau phần khen thưởng, anh tiếp tục thông báo kế hoạch thứ hai:Cuối năm nay, công ty sẽ tổ chức chuyến du lịch 2 ngày cho toàn thể anh em. Đây là hoạt động mà năm nào anh cũng cố gắng duy trì, như một lời cảm ơn cho cả tập thể đã nỗ lực suốt một năm dài.Anh nói đùa: “Đi làm thì căng thẳng, áp lực… nhưng đi chơi thì phải hết mình để năm sau còn có sức chiến đấu tiếp chứ!”Cả phòng bật cười, không khí bớt căng thẳng, ai cũng háo hức bàn xem năm nay đi biển hay đi núi, đi gần hay đi xa.Anh thì giao cho phòng nhân sự lên kế hoạch: Chọn thời gian phù hợp để không ảnh hưởng đến tiến độ công việc, khảo sát địa điểm, chuẩn bị phương tiện, khách sạn, sắp xếp chương trình chu đáo cho toàn công ty.Anh luôn quan niệm: Một công ty mạnh không chỉ nhờ doanh thu cao, mà còn nhờ anh em đoàn kết, vui vẻ, và cảm thấy gắn bó với nhau.</div>
+            <div class="gallery">
+                <img src="photos1/photo_9@26-11-2025_20-26-56.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Ban Thờ Thần Tài – Nghi Lễ Nhỏ Nhưng Mang Lại Sự An Tâm LớnSáng nay, vừa đến công ty, anh thấy chị Hoa bên kế toán đang chuẩn bị đồ cúng để thắng nhang ở ban thờ Thần Tài Thổ Địa của văn phòng. Nào là trái cây, nước, hoa tươi… chị bày biện rất gọn gàng, sạch sẽ.Anh mỉm cười, vì chị làm đúng như anh dặn từ trước: Ngày rằm và mùng 1, công ty nhất định phải chuẩn bị đầy đủ lễ vật để thắp nhang cho trang nghiêm. Với nhiều người, đây chỉ là một nghi thức bình thường.Nhưng với anh làm kinh doanh bao nhiêu năm, va chạm đủ chuyện nên anh hiểu rằng: Làm ăn phải có tâm, có thờ có thiêng, có kiêng có lành. Anh không mê tín, nhưng anh tin vào sự thành tâm. Tin rằng khi mình kính trọng Thổ Địa Thần Tài, khi mình giữ lễ nghĩa, giữ cái tâm ngay thẳng… thì việc làm ăn cũng suôn sẻ, hanh thông hơn.Anh luôn dặn chị Hoa và anh em trong công ty: “Ban thờ Thần Tài phải sạch sẽ, đồ cúng phải chỉnh chu, nhang đèn phải được thắp đúng ngày.”Đó không chỉ là phong tục, mà còn là cách để mọi người nhắc bản thân làm việc ngay thẳng, đàng hoàng, không gian dối trong kinh doanh.Anh luôn tin rằng: Tín – Tâm – Đức là ba thứ quan trọng nhất với một người làm ăn. Tâm tốt thì việc tốt, làm đúng thì trời độ cho làm ăn phát đạt.Nhìn chị Hoa lau chùi ban thờ cẩn thận, anh cảm thấy yên lòng.Một ngày mới bắt đầu nhẹ nhàng và đầy năng lượng, như được tiếp thêm sự may mắn cho cả công ty.</div>
+            <div class="gallery">
+                <img src="photos1/photo_10@26-11-2025_20-29-36.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Máy Xẻ Gỗ Có Vấn Đề – Một Sự Cố Nhỏ Nhưng Là Bài Học LớnSáng nay, khi anh xuống thăm xưởng gỗ, bước ngang qua khu vực máy xẻ, anh bỗng khựng lại. Từ xa, anh đã nghe tiếng động cơ phát ra âm thanh lạ, không còn đều và êm như mọi ngày. Tiếng máy như bị “gằn” lại, nghe là biết có vấn đề.Anh lập tức tiến đến kiểm tra. Ngó xuống dưới máy, anh thấy phần roăng của bộ tải băng bị lỏng, dầu mỡ rò rỉ thành một vệt nhỏ chảy xuống nền. Chắc do mấy hôm nay anh em tập trung hoàn thành đơn hàng gấp, làm liên tục nên không để ý đến.Anh lấy đồ nghề, siết chặt lại roăng, lau sạch dầu mỡ dư và châm thêm một ít dầu cho đủ. Chỉ một lát sau, anh nhấn nút thử lại máy. Tiếng động cơ liền trở nên êm ru, nhẹ nhàng như bình thường. Anh mới thở phào.Mấy sự cố nhỏ như thế này, nếu không phát hiện kịp thời, để lâu có thể dẫn đến hỏng hóc nặng, thậm chí làm đứng máy cả dây chuyền.Sau khi sửa xong, anh gọi anh em thợ lại, không phải để trách, mà để nhắc nhở và chia sẻ kinh nghiệm: “Anh biết thời gian này mọi người bận rộn, làm liên tục. Nhưng máy móc mà không được để tâm theo dõi thì hỏng lúc nào không hay. Một lỗi nhỏ mà không phát hiện kịp, có khi phải dừng cả xưởng.Nặng hơn nữa thì có thể gây tai nạn, ảnh hưởng đến an toàn của chính anh em.”Anh nói rõ: Công ty là một dây chuyền sản xuất, một bộ phận trục trặc là kéo theo tất cả. Quan trọng hơn hết không phải máy móc hay chi phí sửa chữa, mà là tính mạng của anh em thợ – điều anh đặt lên hàng đầu.Anh nhấn mạnh lần nữa: “Đừng chủ quan, đừng để mọi thứ đến tay anh mới phát hiện ra. Máy móc cũng giống con người, phải chăm sóc mỗi ngày.”Anh em đều gật đầu, ai cũng nhận ra bài học, và hứa sẽ kiểm tra định kỳ cẩn thận hơn. Một sự cố nhỏ, nhưng lại giúp cả đội trưởng thành thêm một chút trong công việc.</div>
+            <div class="gallery">
+                <img src="photos1/photo_11@26-11-2025_20-32-44.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Nhà Bếp Ăn Bớt Tiền Đi Chợ – Sự Bức Xúc và Cách Giải Quyết Dứt Điểm Của AnhSáng nay, khi vừa đến công ty, anh nghe mấy anh em công nhân nhỏ to với nhau rằng khẩu phần ăn ngày càng ít, món thì loãng hơn trước, thịt cá thì giảm, rau cũng chẳng còn bao nhiêu. Nghe xong anh giật mình, vì anh luôn quy định rất rõ: “Công nhân làm việc nặng thì bữa ăn phải đủ chất, đủ lượng.”Làm nghề gỗ, ai vào xưởng rồi cũng biết: Xẻ gỗ, bào gỗ, khiêng gỗ… công đoạn nào cũng cực nhọc, bụi bặm, mồ hôi nhễ nhại. Một bữa ăn mà không đủ dinh dưỡng thì làm sao có sức để làm tiếp?Anh liền xuống nhà bếp quan sát. Nhìn khay thức ăn hôm nay, anh biết ngay có chuyện không ổn. Thức ăn ít hơn so với số tiền anh cấp cho bếp, mà giảm không phải giảm chút, mà giảm thấy rõ.Ngay lập tức, anh gọi quản lý lại và nói rất rõ ràng: “Anh muốn trong ngày hôm nay phải điều tra cho ra nguyên nhân. Nếu nhà bếp ăn bớt khẩu phần của nhân viên, anh sẽ chấm dứt hợp đồng ngay lập tức.”Anh rất bực mình, nhưng vẫn xử lý theo nguyên tắc, đúng – sai phải rõ ràng. Vì với anh, nhân viên không chỉ là người làm thuê, mà là anh em trong nhà. Họ bỏ sức, bỏ mồ hôi để làm việc cho công ty, anh phải lo cho họ bữa ăn đầy đủ, đó là trách nhiệm của người chủ.Anh nói thêm với quản lý: “Nếu bếp ăn không còn giữ được cái tâm, thì anh sẽ đổi bếp mới. Anh thà trả tiền cao hơn, miễn sao nhân viên có bữa cơm tử tế. Làm việc nặng mà ăn thiếu chất là anh không chấp nhận.”Anh không bao giờ tiếc tiền cho nhân viên, vì anh biết họ làm rất vất vả.Một bữa cơm tốt là quyền lợi tối thiểu và là sự tôn trọng dành cho họ.Bây giờ anh chỉ chờ kết quả điều tra cuối ngày.Nếu đúng như anh em phản ánh, anh sẽ thay đổi nhà ăn ngay lập tức để mọi người không còn cảm giác bị thiệt thòi, và được hưởng đúng chế độ mà anh đề ra từ đầu.</div>
+            <div class="gallery">
+                <img src="photos1/photo_12@26-11-2025_20-43-08.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Mua Xe Mới Cho Anh Phú – Một Câu Chuyện Khiến Anh Thương Đến Nhói LòngSáng nay vừa đặt chân đến công ty, anh nghe được câu chuyện của anh Phú mà thấy thương hết sức, em à.Anh Phú là thợ chính điêu khắc, người làm việc lâu năm, tay nghề tốt, tính tình hiền lành và chịu khó nhất xưởng.Hôm qua, trong lúc đang thi công nội thất cho một khách hàng, anh ấy dựng chiếc xe máy trước cổng nhà. Ai ngờ chỉ trong vài chục phút vào làm việc, kẻ gian bẻ khóa và lấy mất chiếc xe, biến luôn cả phương tiện mưu sinh của anh. Khi anh ấy gọi điện báo cho anh, giọng run run, cố kìm nhưng vẫn nghe được nỗi nghẹn trong từng câu nói.Anh biết hoàn cảnh của anh Phú vốn đã khó khăn. Cả gia đình chỉ có mình anh ấy làm trụ cột. Vợ thì ở nhà chăm hai đứa con nhỏ, đứa lớn mới học lớp 1, đứa nhỏ chỉ mới biết chạy. Ba thì bị bệnh tiểu đường nhiều năm, tiền thuốc men mỗi tháng đã tốn không ít. Nhà chẳng có tài sản gì đáng giá ngoài chiếc xe máy cũ đó, vậy mà giờ nó cũng bị lấy mất.Sáng nay, khi gặp anh ở công ty, anh Phú nhìn như người mất hồn.Ánh mắt anh ấy đỏ hoe, vừa tiếc của vừa lo không biết những ngày tới đi làm bằng gì, lấy gì đóng tiền học cho con, rồi thuốc thang cho ba.Nhìn ánh mắt muốn khóc nhưng cố giấu đi của một người đàn ông anh thật sự thấy xót.Không suy nghĩ nhiều, anh gọi chị Hoa kế toán lên phòng và nói: “Chi cho anh một khoản tiền. Anh dẫn anh Phú đi mua chiếc xe mới để còn có phương tiện đi làm.” Anh biết, với người lao động nghèo, mất một chiếc xe chẳng khác nào mất nửa cuộc sống. Xe không chỉ là tài sản, mà là cần câu cơm, là phương tiện họ nuôi cả gia đình.Chiều nay, anh đưa anh Phú ra cửa hàng xe máy. Lúc chọn xe, anh ấy cứ bối rối, chân tay lúng túng, miệng chỉ biết nói: “Em cảm ơn anh nhiều lắm… Chứ không có anh thì em không biết phải làm sao…”Anh chỉ cười và nói: “Anh em trong công ty hỗ trợ nhau lúc khó khăn là chuyện bình thường. Em yên tâm làm việc, còn lại để anh lo.”Nhìn thấy anh ấy chạy thử chiếc xe mới, gương mặt rạng rỡ sau bao ngày căng thẳng, anh cảm thấy nhẹ lòng lắm. Giúp một người đúng lúc họ tuyệt vọng, đó là việc khiến anh vui hơn bất kỳ điều gì.</div>
+            <div class="gallery">
+                <img src="photos1/photo_13@26-11-2025_20-47-44.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos1/photo_14@26-11-2025_20-47-44.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Động Viên Nhân Viên Mới – Một Buổi Sáng Ấm Áp Tại Công TySáng nay anh đến công ty sớm hơn mọi ngày một chút, còn chưa kịp mở cửa phòng làm việc, đã thấy cậu Hoàng, nhân viên kế toán mới vào công ty được khoảng một tháng, đang ngồi cúi đầu chăm chú làm việc.Anh bước lại gần, hỏi thăm: Sao sáng sớm đã ở đây rồi, Hoàng?Cậu hơi lúng túng, cúi đầu nói nhỏ:  Dạ, tuần vừa rồi em làm báo cáo tài chính có vài số liệu bị sai, chị Hoa kế toán trưởng yêu cầu em làm lại Anh mỉm cười và ngồi xuống cạnh cậu, lắng nghe cẩn thận. Thì ra, cậu Hoàng còn non kinh nghiệm, một số khoản thu chi chưa khớp, nên báo cáo cần chỉnh sửa lại để đảm bảo chính xác.Anh động viên: Không sao đâu, Hoàng. Cứ làm chậm lại một chút, kiểm tra kỹ từng khoản, từng mục. Làm cẩn thận là tốt, không cần vội vàng. Quan trọng là làm đúng và rõ ràng.Nghe anh nói, cậu Hoàng cảm thấy nhẹ lòng, gương mặt bớt căng thẳng hẳn. Anh nhắc thêm: Chị Hoa làm việc với anh từ lúc công ty mới mở tới giờ, rất cẩn thận và nghiêm túc. Em cứ học hỏi cách chị ấy làm, sẽ thấy công việc không còn khó khăn nữa.Anh nhìn Hoàng chăm chú một lúc, thấy cậu tập trung sửa từng chi tiết nhỏ trong báo cáo, lòng cũng thấy vui. Anh luôn nghĩ, nhân viên mới vào, cần được động viên đúng lúc để họ hiểu rằng sai lầm không sao, quan trọng là biết sửa và làm tốt hơn.Buổi sáng hôm đó, không chỉ Hoàng nhận được sự hướng dẫn tận tình, mà chính anh cũng cảm nhận được không khí ấm áp, tràn đầy tinh thần làm việc nghiêm túc và trách nhiệm tại công ty.</div>
+            <div class="gallery">
+                <img src="photos1/photo_15@26-11-2025_20-51-07.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Giao Đơn Hàng Tượng Di Lặc – Gắn Kết Quan Hệ Khách HàngHôm nay anh trực tiếp mang đơn hàng tượng Di Lặc đến tận nhà cho khách hàng, thay vì để nhân viên giao, vì đây là người bạn thâm giao của chú. Đây là lô tượng mà anh đã kể với em hôm trước, là sản phẩm tinh xảo được chế tác từ gỗ quý, tỉ mỉ từng chi tiết, tượng trưng cho may mắn, tài lộc và hạnh phúc.Khi đến nơi, anh nhìn thấy nụ cười vui vẻ trên gương mặt chú, không chỉ vì sản phẩm đẹp mà còn vì cách chăm sóc, quan tâm tận tình. Anh trò chuyện cùng chú một lúc, hỏi han về gia đình và công việc, nghe chú kể vài câu chuyện vui của cuộc sống hàng ngày. Không khí trở nên thân thiện, gần gũi hơn hẳn, khác hẳn với việc chỉ giao hàng và kết thúc công việc.Anh nghĩ, bây giờ làm gì cũng cần phải có mối quan hệ tốt với khách hàng. Những chi tiết nhỏ như trực tiếp giao hàng, trò chuyện, quan tâm đến họ sẽ tạo dựng lòng tin và sự quý mến lâu dài. Nhìn chú nâng niu từng bức tượng, anh cảm thấy vui trong lòng vì không chỉ hoàn thành công việc, mà còn gắn kết thêm mối quan hệ thân thiết với khách hàng, giúp công việc kinh doanh trở nên thuận lợi hơn.Khi ra về, anh biết rằng, chính sự tận tâm, sự chân thành trong cách làm việc mới là thứ khách hàng nhớ lâu nhất, hơn cả sản phẩm hay giá cả.</div>
+            <div class="gallery">
+                <img src="photos1/photo_16@26-11-2025_20-54-27.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos1/photo_17@26-11-2025_20-54-27.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Kiểm Tra Gỗ Óc Chó Nam Mỹ – Chất Lượng Từng Chi TiếtHôm nay, anh vừa nhận lô gỗ mới về xưởng và tranh thủ nói chuyện với em một chút trước khi bận việc. Em có biết đây là gỗ gì không? Đó chính là gỗ Óc Chó Nam Mỹ, một trong những loại gỗ cao cấp rất được ưa chuộng trong ngành nội thất và thiết kế hiện nay.Loại gỗ này có ưu điểm nổi bật là dễ gia công, dễ bám sơn và dầu, khi hoàn thiện nhìn rất mịn màng, sang trọng. Vân gỗ mềm mại, độ cứng chắc tốt, khả năng chống mối mọt và cong vênh nứt nẻ cao. Chính vì vậy, gỗ Óc Chó Nam Mỹ thường được dùng để làm nội thất cao cấp như bàn ghế, giường tủ, kệ bếp, hoặc những chi tiết trang trí sang trọng như ốp tường, lát sàn, đồ thủ công mỹ nghệ.Gỗ này có giá khá cao, từ 40–80 triệu/m³, tùy loại, độ khô, xử lý và xuất xứ, nên nếu không kiểm tra kỹ, sai một ly đi một dặm, ảnh hưởng ngay đến chất lượng sản phẩm và uy tín của công ty. Đây cũng là lý do anh luôn kiểm tra tỉ mỉ từng thanh gỗ, từng chi tiết nhỏ trước khi đưa vào sản xuất, để đảm bảo sản phẩm cuối cùng thật hoàn hảo, đẹp mắt và bền bỉ cho khách hàng.Tranh thủ rảnh tay, anh nói chuyện cùng em một lúc, giải thích cặn kẽ về đặc tính của gỗ, cách chọn loại gỗ tốt, nhưng rồi lại phải quay vào công việc vì còn nhiều việc đang chờ xử lý. Công việc này đòi hỏi sự tỉ mỉ và cẩn trọng từng chi tiết. Chỉ cần lơ là một chút thôi là ảnh hưởng ngay đến sản phẩm và uy tín.Em thấy, trong kinh doanh nội thất, chất lượng nguyên liệu là nền tảng, còn sự tâm huyết, chú tâm vào từng chi tiết là bí quyết để tạo ra những sản phẩm đẳng cấp và giữ được niềm tin lâu dài từ khách hàng.</div>
+            <div class="gallery">
+                <img src="photos1/photo_18@26-11-2025_20-58-37.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos1/photo_19@26-11-2025_20-58-37.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Cặp Chum Phú Quý Gỗ Nu Cẩm – Biểu Tượng Thịnh VượngAnh đang ở dưới kho, chuẩn bị cho thợ bọc hàng để giao cho khách. Đẹp không em? Khách đặt cặp chum phú quý này từ hơn tuần trước, và hôm nay mới hoàn tất, chuẩn bị ship đi. Em đoán xem, cặp chum này làm bằng gỗ gì nào?Đó chính là gỗ nu cẩm, một loại gỗ quý hiếm, nổi tiếng với vân gỗ đẹp mắt, màu sắc độc đáo. Khi được chế tác thành đồ thủ công mỹ nghệ, cặp chum không chỉ có giá trị sử dụng mà còn mang tính thẩm mỹ cao.Vì được làm từ gỗ nu cẩm giọt nước, chiếc chum càng trở nên nổi bật và đặc biệt. Những cặp chum phú quý thường được coi là biểu tượng của sự thịnh vượng, giàu có và may mắn trong phong thủy. Chưa kể, quá trình chế tác phải tỉ mỉ, kỳ công, chính vì thế giá trị của chúng rất cao.Chiếc cặp hôm nay cao 74cm, đường kính 29cm, nặng 84kg cho hai bình, và có giá 15 triệu đồng. Việc hoàn thiện mất hơn một tuần, bởi mỗi chi tiết đều phải chăm chút, đảm bảo sản phẩm hoàn hảo trước khi đến tay khách hàng.Nhìn cặp chum, anh không khỏi tự hào: sản phẩm đẹp, hiếm, và mang ý nghĩa phong thủy sâu sắc. Anh bận rộn hướng dẫn thợ bọc cẩn thận để bảo vệ sản phẩm trước khi vận chuyển. Mỗi sản phẩm quý như thế này, không chỉ là hàng hóa, mà còn là tâm huyết, nghệ thuật và uy tín của công ty.Sau khi kiểm tra xong, anh quay lại công việc khác, nhưng vẫn nhìn cặp chum một lần nữa, tự nhủ rằng từng chi tiết nhỏ, từng công đoạn chế tác đều phải hoàn hảo, vì đó chính là giá trị thật sự của nghề.</div>
+            <div class="gallery">
+                <img src="photos1/photo_20@26-11-2025_21-01-37.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Đôi Lộc Bình Gỗ Hương Đỏ – Biểu Tượng Tài Lộc và May MắnAnh đang dưới xưởng, giám sát từng công đoạn thợ làm việc, đảm bảo mọi thứ đều hoàn hảo. Anh đi qua khu vực chế tác và dừng lại trước đôi lộc bình vừa hoàn thành. Em thấy sao, đẹp không?Đây là lộc bình làm bằng gỗ hương đỏ, một loại gỗ quý hiếm, nổi tiếng với màu đỏ đặc trưng và mùi hương nhẹ nhàng. Gỗ hương đỏ không chỉ bền, chắc, mà còn tạo cảm giác sang trọng, quý phái cho sản phẩm. Chính vì vậy, nó rất được ưa chuộng trong chế tác đồ nội thất cao cấp, đặc biệt là lộc bình, bàn ghế, tủ kệ.Anh giải thích thêm, lộc bình vốn là biểu tượng của sự sung túc, may mắn và tài lộc, nên thường được đặt ở phòng khách, không gian thờ cúng hoặc những nơi mang ý nghĩa phong thủy trong nhà. Đặt một đôi lộc bình gỗ hương đỏ không chỉ làm đẹp không gian mà còn thu hút vận may, thịnh vượng cho gia chủ.Chiếc lộc bình này có chiều cao 1,6m, đường kính 48cm, là một sản phẩm lớn và tinh xảo. Sau khi hoàn thiện, giá trị của đôi lộc bình rơi vào khoảng 72 triệu đồng, xứng đáng với công sức, tâm huyết và chất lượng nguyên liệu.Anh đứng nhìn đôi lộc bình một lúc, kiểm tra từng chi tiết, từ đường vân gỗ, độ bóng đến sự cân đối của đôi sản phẩm. Anh nhắc nhở thợ: “Những sản phẩm như thế này, mỗi chi tiết đều phải hoàn hảo. Đây không chỉ là hàng hóa, mà là tâm huyết và uy tín của chúng ta.”Sau khi mọi thứ đã ổn, anh tiếp tục giám sát các công đoạn khác, nhưng đôi lộc bình vẫn để lại trong anh cảm giác hài lòng. Mỗi sản phẩm quý như thế này đều mang ý nghĩa phong thủy và giá trị nghệ thuật cao, chính vì thế, anh luôn muốn mọi thứ được làm một cách chỉn chu nhất trước khi đến tay khách hàng.</div>
+            <div class="gallery">
+                <img src="photos1/photo_21@26-11-2025_21-05-14.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Lô Gỗ Tần Bì Mới Nhập – Kiểm Tra và Ứng Dụng Trong Sản XuấtAnh đang ở kho nguyên liệu ngay từ sáng để kiểm tra lô gỗ tần bì vừa nhập về. Lô gỗ này rất quan trọng vì sẽ được sử dụng làm tủ, giường, kệ những sản phẩm mà khách hàng đặt hàng thường xuyên. Anh trực tiếp đối chiếu số liệu và kiểm tra chất lượng từng thanh gỗ. May mắn là trong lô hàng, chỉ có 2 thanh bị nứt nhẹ, còn lại đều đạt chuẩn chất lượng.Anh giải thích với nhân viên, gỗ tần bì có nhiều ưu điểm: màu sáng, giữ được vân tự nhiên, dễ sơn phủ, phù hợp với nhiều kiểu thiết kế nội thất. Đồng thời, giá thành gỗ cũng ổn định, sau khi sấy khô, gỗ bền, ít cong vênh, rất thuận tiện cho việc sản xuất hàng loạt. Chính vì thế, loại gỗ này được anh sử dụng nhiều trong các đơn hàng nội thất cao cấp, đảm bảo sản phẩm đẹp và chất lượng đồng đều.Anh nhắc nhở anh em trong kho: Khi nhập gỗ, phải kiểm tra kỹ từng thanh, nếu bỏ sót những thanh nứt hay hỏng thì khi đưa vào sản xuất sẽ ảnh hưởng đến sản phẩm cuối cùng, khách hàng sẽ không hài lòng. Sau đó, anh cho nhân viên sắp xếp gỗ theo loại, kích thước, chuẩn bị sẵn cho công đoạn sản xuất tiếp theo.Nhìn lô gỗ được sắp xếp gọn gàng, anh cảm thấy yên tâm. Chất lượng nguyên liệu tốt là nền tảng để mọi sản phẩm sau này đạt chuẩn, từ tủ, giường đến kệ, tất cả đều cần sự tỉ mỉ và chỉn chu ngay từ khâu đầu tiên.</div>
+            <div class="gallery">
+                <img src="photos1/photo_22@26-11-2025_21-07-29.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Giao Sập Gụ Cho Khách Hàng – Niềm Vui Khi Khách Hài LòngSáng nay, anh đang ngồi uống chén chè cùng anh em xưởng trong giờ giải lao thì nhận được cuộc gọi từ chị Hương, một khách quen ở quận 12. Chị ấy hỏi về chiếc sập gụ trơn 1m8x2m mà chị đặt tuần trước: Nếu xong rồi, các anh có thể ship cho chị ngay không? Trưa mai nhà chị có giỗ, cần bày biện kịp.Anh quay lại nhìn anh em trong xưởng, tất cả đều biết cái sập vừa xong nước PU đêm qua, còn chưa kịp chụp ảnh gửi khách. Nhưng nghe khách nói nhà có giỗ thì mọi người đều đồng ý ưu tiên giao hàng ngay, không thể để lỡ việc quan trọng của khách.Chiếc sập nặng gần 200kg, bề mặt trơn bóng, nên việc vận chuyển không khéo là dễ bị xước, cần phải nâng niu và cẩn trọng từng bước. Anh cùng mấy anh em lên kế hoạch vận chuyển kỹ lưỡng, kê lót đệm, dùng dây và xe đẩy chắc chắn để đảm bảo an toàn cho sản phẩm.Đến nơi, chị Hương nhìn thấy sập liền khen nức nở: chiếc sập đẹp, vân gỗ mịn màng, màu sơn lên chuẩn, đúng hẳn ý chị. Nhìn thấy niềm vui và sự hài lòng của khách, anh cảm thấy hạnh phúc và tự hào. Dù vận chuyển hơi mệt, nhưng công sức của anh em đều được đền đáp xứng đáng.Trước khi ra về, anh còn dặn chị cách bảo quản gỗ, tránh ẩm mốc, giữ cho chiếc sập luôn bền đẹp theo thời gian. Anh chuẩn bị trở về xưởng đây em à, trong lòng anh vui vì một sản phẩm hoàn hảo đã đến đúng tay khách hàng.</div>
+            <div class="gallery">
+                <img src="photos1/photo_23@26-11-2025_21-10-14.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Học Việc Tại Xưởng – Niềm Vui Khi Thấy Chăm ChỉAnh đang ở xưởng gia công, đi quanh xem anh em làm việc, thì chú ý đến một anh học viên mới vừa nhận vào xưởng. Em có nhìn thấy cậu bé đang làm việc kia không?Cậu ấy đang chăm chú thực hành từng công đoạn, từ lựa chọn nguyên liệu, xử lý gỗ đến chế tác từng chi tiết nhỏ. Nhìn cách cậu ấy tập trung, anh bỗng nhớ lại chính mình thời còn học nghề: lúc đó anh cũng chỉ biết chăm chú vào công việc, ít nói, ít để ý đến xung quanh, tất cả chỉ để nắm bắt kỹ năng nhanh nhất có thể.Mỗi ngày, anh đều miệt mài rèn luyện đến tận khuya, tìm hiểu từng loại gỗ, lựa chọn nguyên liệu tốt nhất, chế biến ra những thành phẩm hoàn hảo. Chính sự tỉ mỉ và kiên trì đó đã giúp anh tạo ra những tác phẩm chất lượng, đẹp mắt và bền lâu.Nhìn cậu học viên mới, anh thấy niềm vui và hy vọng, vì nghề này cần những người có tâm, chịu học hỏi và chăm chỉ. Anh nhắc nhở bản thân và anh em: mỗi sản phẩm không chỉ là công việc, mà còn là niềm tự hào và nghệ thuật.</div>
+            <div class="gallery">
+                <img src="photos1/photo_24@26-11-2025_21-15-20.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Tăng Ca Đêm – Giao Bộ Bàn Ghế Gỗ Cao CấpHôm nay, xưởng anh sẽ phải tăng ca buổi tối để xuất lô bàn ghế gỗ cao cấp cho một khách hàng quan trọng. Sản phẩm đã hoàn thiện từ chiều, nhưng khách yêu cầu giao trong đêm để kịp nhận vào sáng hôm sau, nên toàn bộ bộ phận kho và vận chuyển phải khẩn trương chuẩn bị.Khi hết giờ làm việc hành chính, mọi người trong kho không hề than vãn, mà ngược lại đều tập trung cao độ vào công việc. Anh quan sát thấy từng nhân viên kiểm tra kỹ từng chi tiết: độ mịn của bề mặt gỗ, màu sơn, các mối ghép, khóa… không bỏ sót một chi tiết nhỏ nào.Đội vận chuyển cũng đã chuẩn bị sẵn sàng: xe tải được kiểm tra, dây chằng, đệm bảo vệ sản phẩm đầy đủ để tránh va chạm trong quá trình di chuyển. Tuy trời tối và mọi người đều mệt sau một ngày làm việc căng thẳng, nhưng ai nấy đều làm việc nhiệt tình và tập trung, không để sự mệt mỏi ảnh hưởng đến chất lượng.Sau một buổi tối nỗ lực, cuối cùng bộ bàn ghế gỗ đã được xếp cẩn thận lên xe, sẵn sàng giao đi ngay trong đêm. Nhìn từng sản phẩm sáng bóng trên xe, anh thấy niềm tự hào về tinh thần làm việc của cả đội, vì nhờ sự phối hợp ăn ý và trách nhiệm của từng người, công ty vẫn giữ đúng cam kết với khách hàng, đảm bảo họ nhận được hàng đúng hẹn và hoàn hảo nhất.Dù tăng ca vất vả, nhưng anh biết, chính tinh thần đồng đội, trách nhiệm và cái tâm trong nghề mới làm nên thành công của công ty.</div>
+            <div class="gallery">
+                <img src="photos1/photo_25@26-11-2025_21-24-00.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos1/photo_26@26-11-2025_21-24-00.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">C</div>
+                    <div class="story-info">
+                        <h3>CÂU CHUYỆN CÔNG VIỆC</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Đây là công trình nhà gỗ lim đang trong giai đoạn hoàn thiện, do gia đình anh Minh ở Bình Dương đặt thi công. Đây không phải là một ngôi nhà bình thường, mà là kết tinh của tâm huyết và tình yêu với nét đẹp kiến trúc cổ Bắc Bộ mà anh muốn gìn giữ cho bố mẹ và con cháu.Ngôi nhà được dựng hoàn toàn theo kiểu nhà cổ truyền thống, với hệ thống cột, kèo, xà ngang làm bằng gỗ lim Nam Phi, loại gỗ quý nổi tiếng về độ bền, khả năng chịu lực cao và càng dùng lâu càng bóng đẹp, toát lên vẻ sang trọng và vững chãi. Mỗi cây cột, thanh xà không chỉ là bộ khung nâng đỡ mái nhà mà còn là một tác phẩm nghệ thuật với những hoa văn tinh xảo, được các nghệ nhân chạm khắc hoàn toàn thủ công. Từng đường nét, từng hoa văn trên đầu cột, trên kèo đều thể hiện sự kỳ công, tỉ mỉ và tình yêu nghề của đội thợ.Phần trần nhà đã được lợp bằng ngói ta nung truyền thống, những thanh đỡ mái được bố trí chắc chắn, vừa đảm bảo thẩm mỹ vừa giữ vững kiến trúc cổ xưa. Không gian này hứa hẹn sẽ mang đến một cảm giác ấm cúng, bình yên ngay khi bước vào, giống như một nơi lưu giữ ký ức và truyền thống gia đình.Hiện tại, công trình đã hoàn tất phần khung và trần, đang trong giai đoạn lắp đặt hệ thống điện và hoàn thiện nội thất. Anh Minh chia sẻ: Tôi muốn giữ lại nếp nhà xưa cho bố mẹ, đồng thời tạo một không gian tâm linh cho cả gia đình. Dù chi phí có cao hơn so với nhà bê tông hiện đại, nhưng nhà gỗ mang lại cảm giác ấm áp và bền vững theo thời gian.Mỗi ngày trôi qua, ngôi nhà dần hình thành, từ những thanh gỗ lim vững chãi đến những nét chạm khắc tinh tế, từng chi tiết đều kể câu chuyện về sự kết hợp giữa truyền thống và tình cảm gia đình. Không chỉ là nơi ở, đây còn là biểu tượng cho sự trân trọng giá trị xưa cũ, là nơi thế hệ sau tiếp tục gìn giữ tinh thần của tổ tiên.</div>
+            <div class="gallery">
+                <img src="photos1/photo_27@26-11-2025_22-01-05.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos1/photo_28@26-11-2025_22-01-05.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Tối hôm nay, anh có cuộc hẹn quan trọng với vài vị khách Trung Quốc. Đây là những đối tác lớn, vì vậy anh phải tiếp đón thật cẩn thận. Đi cùng anh còn có một bạn phiên dịch tiếng Trung để đảm bảo mọi trao đổi diễn ra suôn sẻ.Những vị khách này là những nhà đầu tư đã có nhiều dự án tại nước mình, họ điều hành một công ty xuất nhập khẩu đồ gỗ lưu niệm. Một lần tình cờ, khi ghé qua cửa tiệm của anh, họ đã bị thu hút bởi những sản phẩm gỗ đa dạng, từ những món nhỏ xinh đến những tác phẩm điêu khắc tinh xảo. Mỗi chi tiết đều toát lên sự khéo léo và tâm huyết, khiến họ không khỏi trầm trồ.Họ thích thú quan sát từng sản phẩm và ngay lập tức nảy ra ý tưởng: muốn nhập những món đồ này về Trung Quốc làm hàng trưng bày. Câu chuyện hợp tác bắt đầu từ đó. Sau vài lần trao đổi, thương vụ được ký kết và trở thành hợp đồng lâu dài. Lâu lâu, họ sẽ nhập một lô hàng lớn từ bên anh, mỗi lô đều có giá trị kinh tế đáng kể, mang lại lợi nhuận ổn định.Nhưng đối với anh, điều quan trọng nhất không chỉ là lợi nhuận. Qua mỗi hợp đồng, mỗi sản phẩm được xuất đi, anh còn có cơ hội quảng bá văn hóa nước mình ra thế giới. Những chiếc hộp gỗ chạm khắc tinh xảo, những đồ lưu niệm đặc trưng… không chỉ là sản phẩm, mà còn là câu chuyện, là nghệ thuật và truyền thống mà anh muốn mọi người ở nước ngoài biết đến.Nhờ sự hợp tác làm ăn này, anh không chỉ gặt hái giá trị kinh tế mà còn góp phần lan tỏa giá trị văn hóa, khiến những nét đẹp truyền thống trở nên gần gũi và được trân trọng hơn trên thị trường quốc tế. Và có lẽ, chính niềm vui được chia sẻ văn hóa, được thấy người khác trân trọng nghệ thuật nước mình mới là phần thưởng lớn nhất đối với anh.</div>
+            <div class="gallery">
+                <img src="photos1/photo_29@26-11-2025_22-03-46.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">C</div>
+                    <div class="story-info">
+                        <h3>CÂU CHUYỆN CÔNG VIỆC</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Sáng nay, khi anh vừa đến công ty, không khí vốn bình thường bỗng trở nên náo nhiệt. Anh Quang chạy dồn dập về phía nhà vệ sinh với vẻ mặt hoảng hốt. Ngay lập tức, anh đoán có chuyện chẳng lành và chạy theo. Hóa ra, sự việc bắt nguồn từ một bạn công nhân mới vừa vào công ty từ hôm qua. Trong lúc đi vệ sinh, bạn ấy vừa hút thuốc vừa bất cẩn, vô tình vứt đầu lọc thuốc lá vào sọt rác mà vẫn còn lửa.Nhận thấy mức độ nghiêm trọng của sự việc, anh lập tức triệu tập một cuộc họp khẩn cấp với toàn bộ công nhân viên trong công ty. Trước mặt mọi người, anh nghiêm khắc phê bình bạn nhân viên mới, nhấn mạnh rằng hành vi này cực kỳ nguy hiểm. Xưởng của anh chủ yếu làm bằng gỗ, những vật liệu dễ cháy nổ, chỉ một sơ suất nhỏ cũng có thể dẫn đến hậu quả nghiêm trọng, đe dọa tính mạng con người và tài sản công ty.Anh nhắc nhở mọi người rằng từ khi mới vào công ty, mỗi nhân viên đều được phổ biến nội quy, quy định và các biện pháp an toàn. Việc không tuân thủ những hướng dẫn này là vô cùng nguy hiểm và không thể chấp nhận.Sau buổi họp, anh yêu cầu các bộ phận chức năng phối hợp tăng cường các lớp tập huấn về an toàn lao động, phòng cháy chữa cháy, nhằm nâng cao nhận thức và kỹ năng ứng phó cho toàn bộ nhân viên. Anh nhấn mạnh rằng phòng ngừa luôn quan trọng hơn, và mỗi người đều phải tự giác bảo vệ chính mình, đồng nghiệp và công ty.Cả buổi sáng hôm nay trôi qua trong không khí nghiêm túc nhưng cũng đầy bài học. Sự việc này đã trở thành lời nhắc nhở sống động cho toàn thể công nhân viên: một phút bất cẩn có thể gây ra hậu quả nghiêm trọng, nhưng qua đó, ý thức về an toàn và tinh thần trách nhiệm được củng cố mạnh mẽ hơn bao giờ hết.</div>
+            <div class="gallery">
+                <img src="photos1/photo_30@26-11-2025_22-20-07.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">C</div>
+                    <div class="story-info">
+                        <h3>CÂU CHUYỆN CÔNG VIỆC</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Golf cuối tuần – Không chỉ là giải trí, mà còn là xây dựng mối quan hệ kinh doanhAnh đang chơi golf ở sân Vietnam Golf &amp; Country Club, Đường Số 1, Long Thạnh Mỹ, Thủ Đức, TP. HCM. Sáng sớm, nắng nhẹ chiếu xuống những thảm cỏ xanh mướt, tiếng gió lướt qua từng tán cây, và âm thanh của những cú swing vang lên đều đặn. Anh đang chơi golf, tận hưởng những giờ phút thư giãn cuối tuần, nhưng mỗi cú đánh cũng là cơ hội để kết nối và quan sát các đối tác.Trước đó vài ngày, anh đã nhờ chú anh hẹn lịch với các đối tác quen thuộc. Những anh em này không chỉ là bạn bè thân thiết của chú mà còn là những nhà đầu tư hợp tác lâu dài. Nhờ sự giới thiệu và uy tín của chú, việc sắp xếp trở nên dễ dàng và thuận lợi, đảm bảo mọi người có mặt đúng giờ và không gặp trục trặc nào.Trong khi chơi golf, anh trao đổi về dự án mới, chia sẻ kinh nghiệm và lắng nghe ý tưởng từ các đối tác. Những câu chuyện dần trở nên thân mật, kết nối không chỉ ở mức công việc mà còn ở mối quan hệ cá nhân. Anh biết rằng trong kinh doanh, những mối quan hệ tốt là nền tảng quan trọng cho mọi thành công.Dù chú không thường xuyên ở Việt Nam, nhưng mọi vấn đề trong công việc đều được chú nắm chắc trong lòng bàn tay. Anh luôn dựa vào sự tư vấn, hỗ trợ và uy tín của chú để mở rộng các mối quan hệ, tạo ra các cơ hội hợp tác mới. Thành công của anh không chỉ đến từ năng lực mà còn nhờ vào mạng lưới quan hệ vững chắc và sự đồng hành của những người đáng tin cậy.Anh cùng các đối tác cười nói, trao đổi và bắt tay trên sân golf, nơi mà mỗi phút giây giải trí cũng đồng thời là xây dựng niềm tin và kết nối bền chặt trong công việc. Đây chính là minh chứng rằng, trong kinh doanh, những mối quan hệ chân thành và sự chuẩn bị kỹ lưỡng là chìa khóa dẫn đến thành công bền vững.</div>
+            <div class="gallery">
+                <img src="photos1/photo_31@26-11-2025_22-41-52.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Anh đang ngồi dưới xưởng gỗ, mắt nhìn theo cậu bạn trẻ đang lúi húi làm việc một cách chăm chú. Cậu bé ấy là Hải, con trai của bác cùng quê anh, người mà anh gặp tại đám tang bác. Khi đó, ba cậu có ngồi trò chuyện và tâm sự với anh. Ông kể rằng Hải năm nay cũng đã ngoài đôi mươi, từng làm việc ở một xưởng mộc quê nhà. Tuy nhiên, chủ xưởng mộc đã nghỉ việc, nên giờ Hải đang thất nghiệp, ở nhà chưa có việc làm. Ông hỏi anh liệu có thể giúp Hải có công việc không.Anh nhìn cậu bé, và trong lòng nảy ra một sự đồng cảm mạnh mẽ. Ngay khi đó, anh đã đồng ý giúp Hải. Ngày hôm đó, khi anh trở lại Sài Gòn, cậu bé khăn gói theo anh, bắt đầu một chặng đường mới tại xưởng gỗ của anh.Khi nhìn Hải làm việc chăm chỉ dưới ánh sáng dịu của xưởng, anh nhớ lại những ngày tháng khó khăn của bản thân, khi anh còn lang thang tìm công việc khắp nơi, tự lực mưu sinh. Những ký ức đó làm anh hiểu sâu sắc nỗi vất vả và khát vọng của Hải.Bây giờ, với xưởng gỗ riêng và công ty đã ổn định, anh cảm thấy có trách nhiệm giúp đỡ những người trẻ cần một cơ hội. Anh luôn sẵn sàng mở rộng tay, tạo việc làm và hướng dẫn họ, không đặt điều kiện gì, chỉ mong họ có cơ hội phát triển và trưởng thành.Cảnh tượng Hải cần mẫn làm việc, dưới sự quan sát và hướng dẫn của anh, không chỉ là hình ảnh một nhân viên mới, mà còn là minh chứng cho giá trị của sự sẻ chia, đồng cảm và tinh thần giúp đỡ nhau trong cuộc sống.</div>
+            <div class="gallery">
+                <img src="photos1/photo_32@26-11-2025_22-42-14.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Dạo gần đây, anh nhận ra hình như mình chưa mua hoa quả cho nhân viên trong xưởng. Ngay lập tức, anh bảo anh Thành lái xe chở bạn Hoa, kế toán, đi mua đầy đủ các loại hoa quả tươi về cho mọi người trong xưởng.Với anh, làm chủ một công ty không chỉ là việc kiếm tiền mà còn là trách nhiệm chăm sóc và quan tâm đến nhân viên. Anh luôn tâm niệm rằng, một người làm chủ trước hết phải giúp nhân viên có điều kiện làm việc tốt, tạo ra thu nhập. Nếu không có nhân viên, việc kinh doanh sẽ không thể vận hành, công ty không thể tồn tại. Ngược lại, khi nhân viên được chăm sóc tốt, môi trường làm việc thuận lợi, chế độ đãi ngộ đầy đủ, họ sẽ gắn bó và cống hiến lâu dài cho công ty.Trong công ty của anh, có những người đã gắn bó cùng anh từ những ngày đầu mở xưởng. Anh Thành lái xe trung thành, luôn sẵn sàng hỗ trợ các công việc vận chuyển; anh Phú thợ chính dày dạn kinh nghiệm, người từng gặp sự cố mất xe máy nhưng vẫn luôn tận tâm với công việc; anh Khoa thợ lành nghề, hôm bị đứt tay vẫn kiên trì hoàn thành nhiệm vụ; cô Quyên lao công chăm chỉ; bạn Hoa kế toán tỉ mỉ; chị Lành… Họ đã đồng hành cùng anh gần chục năm, từ những ngày xưởng còn nhỏ bé, đến khi công ty phát triển như hôm nay.Hình ảnh anh Thành lái xe, bạn Hoa xách giỏ đầy hoa quả vào xưởng, tiếng cười, tiếng chào hỏi của mọi người, ánh mắt vui vẻ khi nhận hoa quả… tất cả đều thể hiện một môi trường làm việc thân thiện, ấm áp. Anh hiểu rằng, những hành động nhỏ như vậy, quan tâm đến sức khỏe, tinh thần của nhân viên, chính là nền tảng để công ty tồn tại và phát triển bền vững.Trong mắt anh, công ty không chỉ là nơi kiếm tiền, mà còn là ngôi nhà chung, nơi mọi người cùng nhau cố gắng, chia sẻ và gắn bó. Chính nhờ sự tận tâm và gắn bó lâu năm của đội ngũ nhân viên, mọi thành công của anh mới trở nên trọn vẹn và ý nghĩa.</div>
+            <div class="gallery">
+                <img src="photos1/photo_33@26-11-2025_22-46-52.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Anh đang đứng dưới xưởng kiểm tra nhân viên trong quá trình làm việc. Hôm nay, xưởng đang hoàn thiện một bộ bàn ghế khách hàng vừa đặt. Hiện tại, các thợ đang tiến hành công đoạn đánh bóng và phun sơn những bước cuối cùng để sản phẩm có vẻ ngoài hoàn hảo.Đơn hàng này được làm theo yêu cầu riêng của khách: hình dáng từng chiếc ghế, từng đường viền đều được thợ khắc tinh tế, tạo nên những hoa văn uốn lượn, xoáy vòng tròn hay những đường vân thẳng mượt mà. Mỗi loại gỗ lại có đặc tính riêng, nên anh và đội ngũ thợ phải tính toán kỹ lưỡng, điều chỉnh hình dáng, điêu khắc sao cho phù hợp với tiêu chuẩn từng sản phẩm.Anh quan sát từng nhân viên tập trung chăm chú vào công việc, từng nét chạm khắc, từng đường sơn, đều đòi hỏi kỹ thuật cao, sự tỉ mỉ và tính kiên nhẫn. Anh biết rằng, hoàn thành sản phẩm đúng thời hạn không có nghĩa là có thể bỏ qua chất lượng. Vì vậy, anh luôn nhắc nhở các thợ cần tập trung và cẩn trọng trong từng công đoạn.Trong khi các nhân viên làm việc, anh đi dọc xưởng, theo sát tiến độ, kiểm tra từng chi tiết và thỉnh thoảng động viên anh em: Chú ý kỹ ở phần viền này nhé, vân gỗ này phải đều, không được lem sơn. Sự hiện diện của anh không chỉ đảm bảo sản phẩm đạt chất lượng cao, mà còn tạo động lực để mọi người làm việc hăng say hơn.Mỗi bộ bàn ghế hoàn thiện không chỉ là sản phẩm, mà còn là kết tinh của kỹ năng, tâm huyết và công sức của cả đội ngũ. Anh hiểu rằng, sự tận tâm và kiểm tra cẩn thận từng bước sẽ giúp khách hàng hài lòng và duy trì uy tín cho xưởng gỗ, đồng thời tạo niềm tự hào cho những người thợ đã gắn bó và làm việc chăm chỉ.</div>
+            <div class="gallery">
+                <img src="photos1/photo_34@26-11-2025_22-48-55.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Sáng nay, anh có mặt tại công ty từ rất sớm để kiểm tra lô gỗ mới vừa về. Đây là một lô gỗ đặc biệt, được đặt riêng để sản xuất theo yêu cầu của khách hàng, nên anh càng cẩn trọng hơn.Anh bắt đầu kiểm tra giấy tờ xuất nhập và mọi chứng từ liên quan. Trước mắt, mọi thứ có vẻ hợp lệ, không có vấn đề gì rõ ràng. Nhưng trực giác kinh nghiệm của anh mách bảo có điều gì đó chưa đúng. Nhìn vào khối lượng gỗ, anh cảm thấy khó tin rằng số lượng này có thể vừa trong một container 40 feet. Theo tính toán của anh, ít nhất phải có thêm gần một nửa container 10 feet nữa mới đúng với đơn hàng.Với trực giác rất ít khi sai, anh lập tức yêu cầu nhân viên đo đạc lại kích thước và khối lượng gỗ. Kết quả đo đạc xác nhận đúng như anh nghi ngờ: số lượng gỗ thiếu hụt so với đơn đặt hàng.Không để sự việc kéo dài, anh yêu cầu bên kho thông báo ngay cho bộ phận xuất hàng kiểm tra lại toàn bộ lô hàng. Đồng thời, anh lập biên bản trả kẹp chì cho lái xe và niêm phong lại container hàng, có sự xác nhận của lái xe về tình trạng niêm phong. Sau khi hoàn tất các thủ tục, container được yêu cầu quay đầu, không được nhận hàng về xưởng.Anh biết rõ, với loại gỗ quý hiếm, việc nhận hàng không đúng với biên bản giao nhận sẽ dẫn đến thiệt hại nghiêm trọng. Vì vậy, mọi hành động đều phải tuân thủ đúng theo hợp đồng mua bán, đảm bảo quyền lợi của công ty và tránh rủi ro không đáng có.Cảnh tượng buổi sáng hôm nay tại công ty không chỉ là việc kiểm tra hàng hóa, mà còn thể hiện sự cẩn trọng, kinh nghiệm và trách nhiệm của người đứng đầu xưởng. Nhờ sự tinh tường và quyết đoán này, công ty không chỉ bảo vệ được lô gỗ quý, mà còn giữ vững uy tín với khách hàng và đối tác.</div>
+            <div class="gallery">
+                <img src="photos1/photo_35@26-11-2025_22-53-32.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Tháng trước, công ty anh tổ chức một chuyến đi du lịch 2 ngày 1 đêm đến Vũng Tàu dành cho những nhân viên có thành tích xuất sắc trong công việc. Đây là một hoạt động nhằm tri ân và khích lệ tinh thần cho những người đã cống hiến hết mình cho công ty trong suốt thời gian qua.Nhân viên của anh hàng ngày làm việc cực nhọc, nhiều lúc phải đối mặt với những áp lực và yêu cầu cao. Vì vậy, công ty luôn muốn thể hiện sự quan tâm, chăm sóc không chỉ bằng lương thưởng mà còn bằng những trải nghiệm thực tế, giúp nhân viên có cơ hội thư giãn và lấy lại năng lượng.Toàn bộ chi phí chuyến đi đều do công ty chi trả. Chuyến đi được tổ chức chu đáo, từ việc ăn uống, nơi nghỉ ngơi đến các hoạt động vui chơi, giải trí và các trò chơi ngoại khóa. Không những thế, công ty còn chuẩn bị những quà tặng nhỏ dành cho mỗi nhân viên, vừa để tri ân, vừa tạo thêm niềm vui và động lực cho anh chị em công nhân viên.Trong chuyến đi, mọi người được thỏa sức tham quan, thưởng thức cảnh biển, tham gia các trò chơi tập thể trên bãi biển và tham dự những hoạt động gắn kết đồng đội. Không khí lúc nào cũng sôi nổi, tiếng cười rộn rã, khiến ai cũng quên đi những mệt nhọc hàng ngày.Những chuyến đi như vậy không chỉ giúp nhân viên thư giãn mà còn tăng cường sự đoàn kết, gắn bó trong tập thể. Nhân viên trở về với tinh thần thoải mái, hăng hái hơn, có thêm động lực làm việc và thêm yêu mến công ty. Đó cũng chính là cách mà anh xây dựng một môi trường làm việc vừa năng suất vừa tràn đầy tình người.</div>
+            <div class="gallery">
+                <img src="photos1/photo_36@26-11-2025_22-57-00.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos1/photo_37@26-11-2025_22-57-00.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Anh vừa tới nơi và đang ngồi cùng vài anh trong chi cục thuế. Trong công việc kinh doanh, anh luôn xác định rằng việc hợp tác và giữ gìn mối quan hệ tốt đẹp với các cơ quan, ban ngành như chi cục thuế, hải quan, kiểm lâm… là vô cùng quan trọng. Những mối quan hệ này giúp công việc diễn ra thuận lợi, minh bạch và tránh những rắc rối không đáng có.Hôm nay, công ty anh chuẩn bị tiến hành quyết toán sổ sách, nên anh đã chủ động liên hệ với bên thuế để trao đổi, làm rõ một số vấn đề còn vướng mắc trong hồ sơ. Anh cẩn thận trình bày các số liệu, thảo luận kỹ từng chi tiết để đảm bảo mọi thứ chính xác và minh bạch theo quy định.Nhưng với anh, xây dựng mối quan hệ tốt không chỉ dừng lại ở giấy tờ hay hồ sơ. Anh biết rõ “đồng tiền đi trước là đồng tiền khôn”, nên chủ động mời anh em đội thuế đi cùng dùng bữa tối. Buổi tối hôm đó diễn ra tại một nhà hàng ở Bình Quới, Bình Thạnh, nơi khá riêng tư, thuận tiện để ăn uống, trò chuyện và trao đổi công việc một cách thoải mái.Trong bữa tối, anh không chỉ bàn về công việc, mà còn trò chuyện thân mật, tạo không khí gần gũi, để các mối quan hệ trở nên tự nhiên và bền chặt hơn. Với anh, đây không đơn giản là một bữa ăn, mà là cách xây dựng mối quan hệ lâu dài, đáng tin cậy – một yếu tố rất cần thiết trong môi trường kinh doanh hiện đại, nơi uy tín và sự hợp tác đôi bên mang lại lợi ích bền vững cho cả hai phía.Buổi tối kết thúc, mọi người ra về với tinh thần cởi mở, tin tưởng và cảm giác thoải mái. Anh hài lòng vì vừa hoàn thành công việc, vừa củng cố được những mối quan hệ quan trọng – điều giúp công ty vận hành thuận lợi và phát triển bền vững trong tương lai.</div>
+            <div class="gallery">
+                <img src="photos1/photo_38@26-11-2025_23-01-54.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Anh cùng anh Thành đang đi qua Lâm Đồng, dọc theo những con đường uốn lượn, để tham khảo nguồn nguyên liệu gỗ. Nơi đây gợi lại trong anh nhiều ký ức về thời gian anh mới bước chân vào nghề : một thời buôn ba, làm việc cực nhọc, học hỏi và từng gây dựng sự nghiệp lần đầu tiên. Những kỷ niệm đó vừa khó khăn, vừa đáng quý, bởi chúng đã hun đúc tính cách và kinh nghiệm cho anh ngày hôm nay.Lâm Đồng vốn nổi tiếng với rất nhiều loại gỗ quý và nguồn gỗ phong phú. Nhưng hiện nay, mọi thứ đã khác. Gỗ trở nên hiếm hơn, khó khai thác hơn, và việc tìm được nguồn nguyên liệu chất lượng không còn dễ dàng như trước. Vì vậy, chuyến đi lần này của anh và anh Thành không chỉ là đi “tham quan” mà là một hoạt động khảo sát quan trọng, để đánh giá thị trường, nắm bắt giá cả, chất lượng và tính khả thi của nguồn cung.Trong công việc, anh luôn quan niệm rằng phải chủ động và có kế hoạch phát triển lâu dài. Không thể đến khi nguồn nguyên liệu khan hiếm mới bắt đầu tìm kiếm, vì như vậy sẽ quá muộn. Mỗi chuyến đi khảo sát như hôm nay là một phần trong chiến lược bền vững, đảm bảo công ty luôn chủ động về nguyên liệu, sẵn sàng đáp ứng các đơn hàng lớn và duy trì chất lượng sản phẩm.Đi giữa rừng thông, nghe tiếng gió lướt qua các tán cây, nhìn những khúc gỗ lớn được chuẩn bị sẵn, anh trò chuyện cùng anh Thành về các loại gỗ, cách khai thác hợp lý, và tiềm năng phát triển lâu dài. Mỗi thông tin thu thập được đều quý giá, góp phần giúp công ty lên kế hoạch mua nguyên liệu hiệu quả, hạn chế rủi ro và tối ưu hóa chi phí.Chuyến đi qua Lâm Đồng hôm nay vừa là nhìn lại quá khứ, vừa là lập kế hoạch cho tương lai. Anh biết rằng, sự chuẩn bị chu đáo hôm nay sẽ là nền tảng vững chắc để công ty phát triển bền lâu, giữ uy tín với khách hàng và duy trì chất lượng sản phẩm trên thị trường.</div>
+            <div class="gallery">
+                <img src="photos1/photo_39@26-11-2025_23-11-21.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos1/photo_40@26-11-2025_23-11-21.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Anh đang gặp sự cố bất ngờ ngay trên đường quốc lộ đây em. Công an giao thông đang kiểm tra xe chở nguyên vật liệu gỗ và gỗ căm xe của công ty. Đây là một lô hàng anh vừa nhập từ bên Lào về, nhưng trọng lượng thực tế lại vượt quá mức cho phép so với tải trọng của xe, khiến cơ quan chức năng tạm dừng phương tiện để xử lý.Trong lúc xử lý tình huống, anh nhanh chóng gọi điện cho chú, nhờ chú liên hệ với anh Quân Phó Chi cục trưởng tại chi cục kiểm lâm ra mặt hỗ trợ. Anh Quân là người quen thân của chú, nên anh tin rằng sự can thiệp của anh ấy sẽ giúp giải quyết vấn đề nhanh gọn và hợp lý.Anh đứng bên cạnh xe, trao đổi với lực lượng công an, đồng thời theo sát tiến trình kiểm tra từng giấy tờ, thông tin về lô hàng, cân nhắc từng bước xử lý. Sự việc tuy căng thẳng, nhưng anh vẫn giữ thái độ điềm tĩnh, vừa bảo vệ quyền lợi của công ty, vừa đảm bảo tuân thủ quy định của pháp luật.Trong đầu anh, mọi phương án đều được tính toán kỹ: từ việc liên hệ người quen, điều phối tài xế, đến việc chuẩn bị hồ sơ chứng minh nguồn gốc, số lượng và xuất xứ lô hàng. Đây là một tình huống điển hình mà người làm kinh doanh phải đối mặt: những lô hàng lớn, nguyên liệu quý hiếm, khi vận chuyển có thể gặp rủi ro pháp lý, cần xử lý linh hoạt nhưng vẫn minh bạch.Dường như mọi thứ đang dồn hết vào vài giờ quyết định này, và anh phải tập trung tuyệt đối để đưa ra giải pháp nhanh nhất, bảo vệ lợi ích cho công ty, đồng thời duy trì uy tín với đối tác và cơ quan quản lý.Cảnh tượng tại hiện trường vừa căng thẳng, vừa mang tính quyết đoán, thể hiện rõ kinh nghiệm, sự điềm tĩnh và mối quan hệ xã hội quan trọng trong công việc kinh doanh mà anh đã vun đắp suốt nhiều năm.Thôi anh xử lý công việc trước đã nhé, xong anh nhắn em sau.</div>
+            <div class="gallery">
+                <img src="photos1/photo_41@26-11-2025_23-17-51.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Hàng tháng, công ty anh đều tổ chức tiệc liên hoan cuối tháng cho toàn bộ công nhân viên. Đây không chỉ là dịp để mọi người ăn uống, vui chơi sau những ngày làm việc chăm chỉ, mà còn là cơ hội để gắn kết tập thể và ghi nhận những đóng góp xuất sắc của nhân viên. Bên cạnh tiệc tùng, công ty còn chuẩn bị những phần quà nhỏ nhưng đầy ý nghĩa, dành tặng những người có thành tích nổi bật, thái độ làm việc nghiêm túc, và đã gắn bó cùng công ty từ những ngày đầu thành lập.Em có để ý chị mặc bộ đồ hồng kia không? Chị ấy là chị Lành, một trong những nhân viên gắn bó lâu năm nhất của xưởng. Mặc dù gia đình chị gặp nhiều khó khăn: chồng mất sớm, một mình nuôi ba con nhỏ nhưng chưa bao giờ chị nghỉ làm. Chị làm việc luôn chăm chỉ, cần mẫn, luôn hoàn thành nhiệm vụ một cách xuất sắc. Không chỉ là tấm gương lao động, chị còn là hình mẫu về sự kiên trì và trách nhiệm.Các con của chị đều ngoan ngoãn, học tập tốt, và nhờ có quỹ khuyến học của công ty, năm nào các con cũng nhận được phần thưởng cho thành tích học tập xuất sắc. Nhìn hình ảnh chị Lành cùng các con, ai cũng cảm thấy ngưỡng mộ một người phụ nữ vừa đảm đang công việc, vừa tận tâm nuôi dạy con cái.Trong buổi tiệc hôm nay, anh dành cho chị một phần thưởng đặc biệt: công ty sẽ tài trợ kinh phí học tập cho ba con của chị đến khi các con đủ 18 tuổi. Đây không chỉ là phần thưởng về vật chất mà còn là sự ghi nhận công sức, lòng tận tâm và tinh thần vượt khó của chị. Mọi người trong xưởng khi nghe đều trầm trồ, cảm phục, và cảm giác như buổi tiệc hôm nay vừa là lễ khen thưởng, vừa là dịp tôn vinh những giá trị nhân văn, sự quan tâm và gắn kết trong công ty.Không khí buổi tiệc trở nên ấm áp hơn bao giờ hết, tiếng cười, ánh mắt vui vẻ, xen lẫn sự cảm động khi chứng kiến chị Lành nhận phần thưởng đặc biệt. Đây là minh chứng rõ ràng nhất cho triết lý mà anh luôn theo đuổi: đồng hành, quan tâm và tạo dựng môi trường làm việc nhân văn, nơi mỗi người đều được trân trọng và công nhận nỗ lực của mình.</div>
+            <div class="gallery">
+                <img src="photos1/photo_42@26-11-2025_23-20-07.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos1/photo_43@26-11-2025_23-20-08.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Đây là chị Nga, một nhân viên gắn bó lâu năm tại xưởng gỗ của anh. Sáng nay, do chị hà tiện, không ăn sáng, nên bị tụt huyết áp và ngất xỉu ngay tại xưởng. Mọi người xung quanh vội vàng đưa chị vào phòng y tế nghỉ ngơi.Chị Nga có hoàn cảnh rất đáng thương. Chị và chồng đã ly hôn lâu, một mình nuôi hai đứa con còn đang tuổi đi học. Ngoài ra, chị còn phải chăm sóc ba mẹ già, trong đó mẹ mắc bệnh tim mạch, sức khỏe yếu. Những ngày cuối tuần, chị thường đưa hai con đến xưởng, vừa để tiện công việc, vừa để các con có môi trường vui chơi an toàn. Thậm chí, thỉnh thoảng anh còn đưa con gái anh đến chơi cùng các con của chị, tạo ra một không gian thân thiện, gần gũi như gia đình thứ hai.Thấu hiểu hoàn cảnh khó khăn của chị, anh quyết định nhận đỡ đầu cho các con của chị Nga. Phía công ty sẽ hỗ trợ đóng học phí cho các con đến khi học hết cấp 3, giúp chị bớt gánh nặng kinh tế và yên tâm làm việc. Anh không chỉ xem đây là nghĩa vụ trách nhiệm, mà còn là cách chăm sóc, đồng hành và sẻ chia với những người gắn bó lâu dài cùng công ty.Hình ảnh chị Nga cùng các con, sự quan tâm của anh và đồng nghiệp, và bầu không khí ấm áp tại xưởng, tất cả đều phản ánh một môi trường làm việc đầy tình người, gắn kết và nhân văn, nơi mỗi nỗ lực của nhân viên đều được trân trọng, và những hoàn cảnh khó khăn đều nhận được sự hỗ trợ thiết thực.</div>
+            <div class="gallery">
+                <img src="photos1/photo_44@26-11-2025_23-22-44.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">C</div>
+                    <div class="story-info">
+                        <h3>CÂU CHUYỆN CÔNG VIỆC</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Chiều nay, anh đi qua công trình xây dựng nhà ở dành cho công nhân viên của công ty. Khu đất này anh đã mua riêng, cách xưởng gỗ khoảng 500 mét, thuận tiện cho nhân viên đi lại nhưng vẫn tách biệt đủ để tạo không gian yên tĩnh, thoải mái.Với mô hình công ty ngày càng phát triển, anh nhận thấy rằng việc hỗ trợ nhân viên chỗ ăn ở ổn định là rất quan trọng. Không chỉ là nơi nghỉ ngơi sau những giờ làm việc căng thẳng, mà còn giúp họ yên tâm công tác, gắn bó lâu dài với công ty. Vì vậy, anh quyết định xây dựng trước nhà tiền chế, để các anh em có chỗ ở tạm, tiện lợi và an toàn.Anh dự định sau Tết sẽ tiến hành xây dựng nhà ở kiên cố, với quy mô rộng rãi hơn các phòng trọ bình thường. Thông thường, một phòng trọ chỉ rộng khoảng 5m², nhưng các phòng anh xây sẽ rộng hơn, đủ để nhân viên có thể ở theo kiểu hộ gia đình nhỏ, thuận tiện cho sinh hoạt, nấu ăn và nghỉ ngơi. Anh muốn tạo ra một môi trường sống tốt, giúp nhân viên không chỉ cảm thấy an toàn mà còn thoải mái, gần gũi như ở nhà.Đi dọc công trình, anh quan sát từng cột, từng nền móng, trao đổi với đội xây dựng về vật liệu, thiết kế, và tiện ích. Anh tỉ mỉ ghi chú để đảm bảo mọi chi tiết phù hợp với nhu cầu thực tế của nhân viên, từ không gian sinh hoạt đến ánh sáng, thông gió và an toàn.Chuyến thăm công trình hôm nay không chỉ là kiểm tra tiến độ, mà còn thể hiện tinh thần quan tâm, chăm lo và trách nhiệm của anh đối với nhân viên, tạo ra một môi trường làm việc bền vững, nơi nhân viên vừa có chỗ làm việc tốt, vừa có nơi ăn ở thoải mái và ổn định.</div>
+            <div class="gallery">
+                <img src="photos1/photo_45@26-11-2025_23-50-44.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Xưởng gỗ của anh vừa hoàn thiện một bức tượng con báo được chạm khắc tinh xảo từ loại gỗ Leopardwood, một loại gỗ quý có nguồn gốc từ Trung Mỹ và Nam Mỹ, nổi bật với vân gỗ đẹp, màu sắc ấm áp và độ bền cao.Bức tượng này được thực hiện theo yêu cầu của một vị khách đặc biệt, người mà anh được bạn giới thiệu để gặp trực tiếp. Khách muốn tạo một tác phẩm nghệ thuật đặt trưng bày trong phòng khách, vừa trang trí, vừa mang ý nghĩa phong thủy sâu sắc.Trong nhiều nền văn hóa, báo là biểu tượng của sức mạnh, sự dũng mãnh và quyết đoán. Chính vì vậy, bức tượng không chỉ là món đồ trang trí mà còn được cho là giúp gia chủ thăng tiến trong sự nghiệp, thúc đẩy năng lượng tích cực trong công việc. Ngoài ra, tượng báo còn có ý nghĩa trấn trạch, hóa giải sát khí, xua đuổi tà ma, năng lượng tiêu cực, mang lại bình an cho gia đình.Đặc biệt, bức tượng cũng thể hiện cá tính mạnh mẽ và niềm đam mê điêu khắc của người sở hữu. Việc sở hữu một tác phẩm bằng gỗ quý, tỉ mỉ chạm khắc từng chi tiết, không chỉ là thú chơi sang trọng mà còn phản ánh gu thẩm mỹ và tinh thần độc lập, quyết đoán của gia chủ.Thật ra, bức tượng đáng lẽ đã hoàn thiện cách đây 10 ngày, nhưng anh khách vì khá quan tâm tới phong thủy và yếu tố tâm linh, phát hiện một vài chi tiết viền ảnh chưa hoàn hảo nên yêu cầu chỉnh sửa lại. Hôm nay, sau khi các chi tiết được hoàn thiện, bức tượng sẵn sàng để bàn giao.Anh đứng bên tác phẩm, ngắm nhìn từng đường nét, từng chi tiết điêu khắc tinh xảo, cảm nhận sự sống động và uy lực mà bức tượng mang lại. Nó vừa dũng mãnh, vừa mềm mại, đúng như tinh thần của loài báo.Bức tượng này sống động từ chất liệu gỗ đặc sắc, kỹ thuật chạm khắc tinh xảo, ý nghĩa phong thủy sâu sắc, đến khả năng truyền tải cá tính và đẳng cấp của người sở hữu. Đây thực sự là một tác phẩm đầy sức sống, uy lực và nghệ thuật, xứng đáng là niềm tự hào của xưởng gỗ anh.</div>
+            <div class="gallery">
+                <img src="photos1/photo_46@26-11-2025_23-59-57.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos1/photo_47@26-11-2025_23-59-57.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos1/photo_48@26-11-2025_23-59-57.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">C</div>
+                    <div class="story-info">
+                        <h3>CÂU CHUYỆN CÔNG VIỆC</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Bức tượng trong hình là Phật Di Lặc được chạm khắc từ gỗ Ngọc Am, còn được biết đến với tên gọi Bố Đại, lấy cảm hứng từ vị hòa thượng người Trung Quốc, được xem là hóa thân của Phật Di Lặc. Bức tượng không chỉ là tác phẩm nghệ thuật, mà còn chứa đựng nhiều ý nghĩa tâm linh sâu sắc.Hạnh phúc và niềm vui: Nụ cười rạng rỡ của Ngài mang lại tinh thần lạc quan, vui vẻ, giúp xua tan mọi muộn phiền, đem lại cảm giác thư thái cho gia chủ và người xung quanh.Thịnh vượng và tài lộc: Phật Di Lặc là biểu tượng của bình an, may mắn và thịnh vượng. Những bức tượng Di Lặc thường được đi kèm các tiểu đồng hoặc cầm bao tiền, tượng trưng cho con đàn cháu đống, gia đình an vui, tài lộc dồi dào, mang đến năng lượng tích cực và may mắn cho gia chủ.Bảo vệ và bình an: Bên cạnh niềm vui và tài lộc, tượng Phật Di Lặc còn được xem như người bạn tinh thần, mang lại sự an tâm và bảo vệ cho gia chủ, tạo ra môi trường sống và làm việc đầy bình yên.Điểm đặc biệt của bức tượng này là 100% được chạm khắc thủ công, từng đường nét, từng chi tiết đều được các nghệ nhân xưởng đẽo bằng tay, hoàn toàn không dùng máy. Chính sự tỉ mỉ này đã tạo nên hồn sống cho từng pho tượng, khiến bức tượng vừa uyển chuyển, vừa mang vẻ trang nghiêm, hài hòa.Hôm nay, xưởng vừa giao một số lượng lớn hơn 18 pho tượng Phật Di Lặc về Vĩnh Long. Mỗi pho tượng là kết tinh của tâm huyết, kỹ năng điêu khắc tinh xảo và ý nghĩa phong thủy sâu sắc, không chỉ làm đẹp không gian mà còn mang lại niềm vui, may mắn và bình an cho gia chủ.Xem bức tượng, người ta không chỉ cảm nhận được vẻ đẹp của gỗ Ngọc Am và sự tinh xảo của nghệ nhân, mà còn thấy được ý nghĩa nhân văn, niềm hy vọng và sự bảo hộ tâm linh mà mỗi tác phẩm mang lại. Đây thực sự là một tác phẩm sống động, giàu ý nghĩa và đầy hồn cốt.</div>
+            <div class="gallery">
+                <img src="photos1/photo_49@27-11-2025_06-30-33.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos1/photo_50@27-11-2025_06-30-33.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos1/photo_51@27-11-2025_06-30-33.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos1/photo_52@27-11-2025_06-30-33.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Em nhìn tác phẩm bức tượng Hưng Đạo Đại Vương Trần Quốc Tuấn này có đẹp không? Đây là sản phẩm bên xưởng anh vừa hoàn thiện. Bức tượng trong hình chính là một trong số đó, tác phẩm mà anh muốn cho em xem, cũng là dịp để anh ôn lại lịch sử dân tộc.Tượng Hưng Đạo Đại Vương luôn mang một khí chất rất riêng: uy nghiêm, cương nghị, mạnh mẽ nhưng đầy trí tuệ. Ánh mắt sắc bén hướng về phía trước, tay đặt trên chuôi kiếm, tấm áo giáp được khắc tỉ mỉ từng nếp gấp, tất cả như tái hiện hình ảnh một vị tướng tài ba đứng giữa chiến trường, quyết tâm bảo vệ non sông Đại Việt.Anh kể cho em nghe:Hưng Đạo Đại Vương Trần Quốc Tuấn (1228–1300) người mà cả dân tộc đời đời ghi nhớ. Ông không chỉ là một danh tướng, mà còn là bậc đại anh hùng, nhà quân sự kiệt xuất, người lãnh đạo quân dân Đại Việt đánh bại đế chế Nguyên Mông hùng mạnh trong ba cuộc kháng chiến oanh liệt : 1258 trận đầu tiên đánh lui quân Mông Cổ. 1285 chiến thắng lớn với chiến thuật vườn không nhà trống. 1288 chiến thắng Bạch Đằng lịch sử, ghi danh vào trang vàng dân tộc.Chính vì vậy, tượng Trần Hưng Đạo thường được đặt ở những nơi trang trọng như phòng khách, phòng làm việc hoặc phòng thờ như một lời nhắc về lòng yêu nước, ý chí kiên cường, tinh thần tự hào dân tộc.</div>
+            <div class="gallery">
+                <img src="photos1/photo_53@27-11-2025_06-40-34.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos1/photo_54@27-11-2025_06-40-34.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos1/photo_55@27-11-2025_06-40-34.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos1/photo_56@27-11-2025_06-40-35.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Hôm nay, anh ghé qua nhà của một đối tác lâu năm để gửi các mẫu bàn thờ gỗ mà bên anh mới chế tác. Sau khi trao đổi công việc, anh được anh ấy mời vào phòng trà đạo, một không gian khiến anh thật sự ấn tượng.Bước vào phòng, anh cảm nhận ngay được sự tĩnh lặng, thuần khiết của một người có đam mê thật sự. Từng vật dụng được sắp xếp gọn gàng, ngay ngắn; từng bộ trà được trưng bày tinh tế; mùi hương trà thoang thoảng hòa vào ánh sáng dịu nhẹ tạo nên một không gian rất “thiền”. Anh đứng nhìn mà phải thốt lên trong lòng:Đúng là người có đam mê, làm việc gì cũng thấy bắt mắt và giàu chất nghệ thuật.Anh ấy là người đã ủng hộ và hợp tác với anh suốt 5 năm trời. Trong lĩnh vực ngân hàng, anh ấy giỏi, chỉn chu và có tầm nhìn. Ấy vậy mà dù bận rộn, anh ấy vẫn giữ cho mình những đam mê riêng: Sưu tầm đồ cổ, các bộ trà hiếm, mê gỗ, mê những vật phẩm mang hồn xưa, yêu trà đạo một cách nghiêm túc, không hời hợtNhiều lần anh ấy tặng anh những loại trà ngon, trà quý, dù biết rằng anh không đam mê sâu như anh ấy. Chỉ đơn giản vì anh ấy muốn chia sẻ những thứ anh ấy yêu thích với những người bạn mà anh ấy trân trọng.Trong lúc ngồi uống trà, anh ấy chia sẻ một câu khiến anh nhớ mãi: Dù có bận rộn đến mấy, cũng phải dành một khoảng thời gian cho riêng mình. Chỉ cần nghe một bài nhạc hay, hoặc ngồi nhấp một ngụm trà, tự nhiên cả ngày mệt mỏi sẽ tan biến.Nghe xong, anh cảm thấy rất thấm. Đúng thật, người càng giỏi thì càng biết giữ cân bằng cuộc sống, nuôi dưỡng tâm hồn để làm việc hiệu quả hơn.Anh ngồi đó, nhìn không gian trà đạo, nhìn phong thái ung dung của đối tác mình, rồi tự nhủ: Anh cũng sẽ học theo thói quen tốt của anh ấy, mỗi ngày dành chút thời gian để nghỉ ngơi, để lắng lại, để sống chậm một chút.Ở cạnh một người giỏi, có đam mê, anh không chỉ hợp tác về công việc mà còn học hỏi được rất nhiều điều giá trị: từ cách sống, cách thưởng thức, đến cách giữ tâm bình an giữa cuộc sống bộn bề.Chuyến ghé thăm hôm nay không chỉ là gửi mẫu bàn thờ gỗ, mà còn là một bài học nhẹ nhàng, sâu sắc về sự cân bằng và niềm đam mê trong cuộc sống.</div>
+            <div class="gallery">
+                <img src="photos1/photo_57@27-11-2025_06-44-55.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Trưa nay, anh có buổi gặp gỡ và dùng bữa cùng mấy anh bên Hải quan tại nhà hàng Hoa Viên Sơn Thủy ở Long Thạnh Mỹ. Nơi này có không gian khá riêng tư, yên tĩnh nên rất thuận tiện cho việc vừa ăn uống, vừa trao đổi công việc một cách thoải mái và chuyên nghiệp.Anh đã từng kể với em rồi tính chất công việc của anh gắn liền với xuất nhập khẩu gỗ, vì vậy việc thường xuyên phải gặp gỡ, trao đổi với các cơ quan chức năng như Hải quan, Kiểm lâm… là điều rất bình thường. Giao lưu không phải để “nhờ vả” mà để giữ sự phối hợp tốt, trao đổi thông tin rõ ràng, giúp các thủ tục diễn ra nhanh gọn, đúng quy định, hạn chế sai sót.Hôm nay, trong bữa ăn, mọi người chia sẻ nhiều về quy trình, quy định mới, những điểm cần lưu ý khi nhập nguyên vật liệu gỗ quý, những thay đổi trong luật và thủ tục. Anh cũng tranh thủ trao đổi những vấn đề còn thắc mắc trong các lô hàng gần đây, mọi thứ đều hướng đến việc làm đúng pháp luật, đúng quy trình, để công việc suôn sẻ, minh bạch.Anh cũng không quên nhắc với em rằng, để có được những mối quan hệ hợp tác tốt như hiện tại, anh phải cảm ơn chú rất nhiều. Chú là người giới thiệu, kết nối, giúp anh có cơ hội tiếp xúc với những người làm việc nghiêm túc, chuyên nghiệp trong ngành. Trong bất kỳ ngành nghề nào, việc hiểu rõ văn hóa làm việc, quy trình, và cách ứng xử là vô cùng quan trọng. Không nắm rõ thì khó mà tồn tại lâu dài.Điều anh học được qua nhiều năm là: Muốn công việc thuận lợi, trước tiên phải tôn trọng đúng quy định ngành.Giao tiếp và giữ quan hệ tốt không phải là “bí mật”, mà là kỹ năng nghề nghiệp cần thiết, để tạo sự tin cậy và hợp tác lâu bền.Và quan trọng hơn hết, mọi mối quan hệ đều phải dựa trên tôn trọng, minh bạch và chuyên nghiệp.Buổi trưa hôm nay không chỉ là bữa ăn, mà còn là dịp để anh kết nối thêm, hiểu hơn về những thay đổi trong lĩnh vực mà công ty đang làm.</div>
+            <div class="gallery">
+                <img src="photos1/photo_58@27-11-2025_06-47-45.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Anh đang ngồi trong phòng tiếp khách của công ty, trò chuyện cùng anh Trưởng Thuế cơ sở, một người mà anh luôn dành sự tôn trọng. Điều đặc biệt là anh ấy vốn là bạn rất thân của chú từ thời còn là sinh viên. Hai người học cùng cấp ba, rồi lại tình cờ vào chung ngành. Cả hai đều nổi tiếng là học giỏi, bản lĩnh, và đi làm thì càng thể hiện năng lực rõ rệt nên ai trong ngành cũng nể.Nhờ mối quan hệ thân tình này mà anh có cơ hội làm quen và hợp tác với anh Trưởng Thuế, một người thẳng thắn, hiểu việc và rất chuyên nghiệp. Trong công việc, anh luôn coi trọng sự minh bạch và phối hợp tốt, nên những buổi gặp mặt như vậy là dịp để trao đổi những vướng mắc trong hồ sơ, nắm rõ các quy định mới, đồng thời xây dựng sự hiểu biết lẫn nhau.Trước khi gặp, chú có nói nhỏ với anh: Nó thích rượu nhẹ, uống phong thái thưởng thức chứ không phải kiểu mạnh bạo.Nên anh đã chuẩn bị tinh tế: chọn đúng chai rượu mà người hiểu rượu ai nhìn cũng nhận ra Hennessy Paradis. Khi anh đặt chai rượu ra bàn tiếp khách, ánh mắt của anh Trưởng Thuế khẽ sáng lên, không phải vì giá trị mà vì sự tinh tế đúng sở thích. Anh nhẹ nhàng giới thiệu, giọng đúng kiểu người am hiểu: Loại này uống rất êm… không gắt, không nồng. Mùi hoa, mật ong, một chút gia vị nhẹ. Hậu vị thì kéo dài, kiểu như để lại dấu ấn mềm mại trong miệng. Thưởng thôi là đủ rồi.Anh Trưởng Thuế cười, giọng thoải mái: Ôi, đúng gu của anh luôn đó!Hai người vừa nhấp rượu, vừa trò chuyện về công việc: từ thủ tục quyết toán, quy định mới của ngành, cho đến cách vận hành doanh nghiệp sao cho bài bản và đúng luật. Buổi trò chuyện diễn ra nhẹ nhàng, chuyên nghiệp nhưng vẫn rất thân tình.Rượu Paradis, với giá khoảng 23–30 triệu một chai 700ml, không phải để phô trương mà giống như một ngôn ngữ tinh tế, cách để tạo không khí thoải mái, giúp câu chuyện trở nên cởi mở và hiệu quả hơn.Bên ngoài cửa kính, nắng chiều nghiêng trên xưởng gỗ. Còn bên trong phòng khách, tiếng ly chạm nhẹ vang lên không ồn ào, không phô trương, chỉ là một khoảnh khắc giao tiếp văn minh giữa những người đàn ông hiểu nhau, tôn trọng nhau, và cùng làm việc vì sự trôi chảy của cả hai bên.</div>
+            <div class="gallery">
+                <img src="photos1/photo_59@27-11-2025_06-52-03.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Sáng nay, khi anh vừa đến xưởng thì thấy anh Quang quản đốc bước vào phòng anh với vẻ mặt rất khác. Bình thường anh Quang lúc nào cũng nhanh nhẹn, nhưng hôm nay anh ấy cầm điện thoại mà tay hơi run. Anh hỏi:  Có chuyện gì vậy em?Anh Quang đưa điện thoại cho anh xem. Là tin nhắn của chị Nhàn người phụ nữ hiền lành, chăm chỉ, luôn cặm cụi làm việc suốt bao năm ở công ty. Trong tin nhắn, chị xin nghỉ làm vì đêm qua đau đầu, mất ngủ, phải đến bệnh viện khám. Kèm theo đó là tấm ảnh chị chụp vết thương trên đầu.Anh đứng lặng. Thật sự sững người. Một người phụ nữ hiền lành, chưa bao giờ to tiếng với ai, luôn nghĩ cho gia đình, vậy mà lại phải chịu cảnh bạo lực gia đình như thế này. Nghĩ đến cảnh chị ôm đầu đau suốt đêm, rồi sáng ra vẫn cố nhắn tin xin nghỉ, anh cảm thấy vừa xót xa vừa thương.Anh bảo ngay với anh Quang báo kế toán xuất cho chị 5 triệu, nói là công ty hỗ trợ để chị bồi dưỡng sức khỏe. Cứ bảo đây là khoản hỗ trợ nhân viên khó khăn, không cần phải ngại.Anh Quang gật đầu, ánh mắt cũng buồn theo.Nhưng anh còn dặn thêm: Em thu xếp… lát nữa ghé nhà chị xem tình hình thế nào. Mình phải biết chị có an toàn không. Làm chủ doanh nghiệp mà chỉ biết nhân viên khi họ đứng ở xưởng thì chưa đủ. Người ta làm việc cho mình, nhưng họ cũng là con người, họ có cuộc sống, có nỗi khổ mà đôi khi họ không dám nói ra.Anh hiểu rất rõ: một công ty không chỉ được xây bằng máy móc và gỗ, mà còn được xây bằng con người. Muốn nhân viên gắn bó lâu dài, phải để họ cảm nhận được rằng nơi họ làm việc không chỉ trả lương, mà còn quan tâm thật lòng.Chiều hôm đó, anh đứng nhìn danh sách nhân viên làm việc ở xưởng. Bao nhiêu con người, bao nhiêu nỗi vất vả phía sau mỗi gương mặt. Ai cũng có một câu chuyện riêng, có một mái nhà để về, có những nỗi buồn mà công ty không nhìn thấy.Và chính vì thế, những lúc như hôm nay, anh càng hiểu: Để giữ nhân viên, không chỉ có lương, mà là sự tử tế.</div>
+            <div class="gallery">
+                <img src="photos1/photo_60@27-11-2025_06-56-36.jpg" alt="Photo" onclick="openLightbox(this.src)">
+<img src="photos1/photo_61@27-11-2025_06-56-36.jpg" alt="Photo" onclick="openLightbox(this.src)">
+            </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Chiều nay, trong lúc ngồi ở văn phòng, anh lại nhận được tin nhắn của anh Minh người bạn thân từ thuở tấm bé, người đã cùng anh đi qua những năm tháng cơ cực đến tận bây giờ. Hai đứa lớn lên bên nhau ở miền Trung đầy nắng gió, rồi mỗi người đi một ngả để lập nghiệp, nhưng tình bạn thì chưa bao giờ phai.Mấy hôm nay, hai anh em lại bàn một chuyện rất lớn:Mua một mảnh đất ở Huế để xây dựng xưởng sản xuất nội thất gỗ.Không phải là dự án xa xỉ, đắt đỏ; mà là một xưởng sản xuất với những sản phẩm có giá trị vừa phải, phù hợp với người dân địa phương. Tổng vốn dự tính khoảng 20 tỷ đồng, một con số lớn, nhưng với kinh nghiệm, uy tín và mối quan hệ của anh trong ngành, anh tin đây là một bước đi vững chắc.Nói đến Huế, anh bỗng nhớ quê mình: con sông đầy phù sa, những ngôi nhà mái ngói rêu phong, làng nghề mộc lâu đời… Tất cả như thôi thúc anh phải làm gì đó. Anh chia sẻ với Minh: Mình làm ở Sài Gòn mấy chục năm rồi. Giờ cũng tới lúc quay về góp phần cho quê hương.Và Minh, người bạn tri kỷ, chỉ nhẹ nhàng đáp: Tao đi cùng mày. Việc này đáng làm lắm.Dự định này của anh không chỉ là chuyện kinh doanh. Nó xuất phát từ nhiều năm nghĩ về câu chuyện “uống nước nhớ nguồn”. Thuở anh khó khăn, có người chìa tay giúp đỡ mà không cần nhận lại gì. Bây giờ khi sự nghiệp đã ổn định, có vốn, có mối quan hệ, có cơ hội, anh muốn là người giúp lại những người khác.Thứ nhất, mở xưởng gỗ ở Huế cũng là cách giữ gìn nghề truyền thống, những hoa văn, những đường đục chạm mà ông cha để lại. Nghề mộc Việt là một phần linh hồn văn hóa, nếu không người trẻ giữ, sợ sẽ dần mai một.Thứ hai, mở xưởng là mang công ăn việc làm về cho bà con tại nơi anh sinh ra. Ở quê, không phải ai cũng có điều kiện học cao hay có việc ổn định, nhiều người phải rời quê đi xa. Anh muốn thay đổi điều đó.Anh nói với anh Minh: Mình làm xưởng không chỉ để kiếm tiền. Mình làm để giúp bà con có việc làm, có thu nhập ổn định, có cái nghề lâu dài.Theo kế hoạch, khoảng tháng 8 sang năm, xưởng sẽ được khởi công xây dựng. Hai anh em đã tính sẽ làm nhanh gọn, chuẩn chỉnh, để sớm có thể tuyển thợ, hướng dẫn người mới, tạo nguồn nhân lực cho địa phương.Trong ánh chiều vàng, nhìn bản vẽ xưởng đặt trên bàn, anh bỗng thấy trái tim mình ấm lại.Bao nhiêu năm làm ăn, giờ mới thực sự cảm nhận được ý nghĩa của hai chữ thành công: Không phải ở số tiền kiếm được, mà ở số người mình có thể giúp đỡ.</div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Chiều hôm đó, trong căn phòng làm việc quen thuộc, anh và anh Thành một người bạn thân thiết lâu năm, làm trong ngành Hải quan, nhưng quan trọng hơn cả: là tri kỷ, là người anh em có chung chí hướng, lại ngồi với nhau trước bản kế hoạch dày cả vài centimet.Hai anh em quen nhau từ thuở còn trẻ, khi mỗi người còn đang loay hoay trong nghề. Dần dần, qua thời gian, tính cách hợp nhau, quan điểm sống cũng tương đồng, nên tình bạn cứ thế gắn bó. Giờ đây cả hai đều chững chạc, có kinh nghiệm, có tầm nhìn và quan trọng nhất là có niềm tin rất lớn vào nhau.Tối đó, sau nhiều cuộc trò chuyện, anh nói: Thành à, kinh doanh gỗ của anh đang phát triển, nhưng anh nghĩ mình nên mở rộng thêm một vài hướng khác. Làm ăn bây giờ không thể chỉ dựa vào một nguồn thu.Anh Thành im lặng một lúc rồi gật đầu: Tao cũng nghĩ vậy… Tao đang để ý một ngành rất tiềm năng: kho lạnh xuất khẩu hải sản. Nhất là ở khu vực cửa khẩu Móng Cái, hàng hóa đi Trung Quốc nhiều lắm. Nếu mình làm đúng, làm bài bản, tương lai rất rộng.Thế là hai người ngồi lại, không phải kiểu nói miệng cho vui. Cả tháng trời, hai anh dành thời gian phân tích từng khâu: Nguồn hàng thủy hải sản ở các tỉnh ven biển, đầu ra cho thị trường Trung Quốc, lượng hàng xuất mỗi ngày tại cửa khẩu, chi phí bảo quản, vận hành kho lạnh, giao thông vận chuyển, chi phí thuê đất, thuê mặt bằng, quy hoạch khu vực, tình hình thị trường ba năm tới, từ bản excel, sơ đồ vận hành, cho đến mô hình cung – cầu… mọi thứ đều được mổ xẻ.Cuối cùng, vào một buổi tối, anh Thành đặt bút ký vào bản kế hoạch chia sẻ rủi ro, lợi nhuận. Anh cũng vậy.Vậy là quyết định được chốt: Đầu tư dự án kho lạnh 20 tỷ.Dự kiến tháng sau khởi công.Lúc chốt xong, cả hai ngồi tựa lưng ghế, thở nhẹ một cái như trút được gánh nặng. Không phải lo, mà là cảm giác bắt đầu một hành trình lớn.Anh nhìn anh Thành và nói: Thành công là phải có thêm những bước đi mới. Anh không muốn đứng một chỗ. Cơ hội đến thì phải nắm.Còn em thì sao? Em có kế hoạch gì cho tương lai của mình chưa? Anh muốn nghe để hiểu em hơn… biết đâu anh cũng chia sẻ được cho em một vài điều giúp ích.</div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Mấy hôm nay, trong đầu anh cứ xoay quanh một ý nghĩ: Phải làm gì đó để công nhân sống ổn định hơn.Sáng nay, trong lúc ngồi nhìn những anh em thợ tất bật trong xưởng, áo ướt đẫm mồ hôi, anh bỗng nhớ lại chính mình ngày xưa, những tháng ngày rong ruổi, thuê trọ chỗ này chỗ kia, thiếu trước hụt sau, không nơi nào gọi là “nhà”.Và anh hiểu, sâu sắc hơn ai hết: Một người không an cư thì rất khó mà lạc nghiệp.Chiều đó, anh hẹn anh Toàn, bạn thân lâu năm, người từng đồng cam cộng khổ cùng anh thời anh còn vất vả. Hai người ngồi trong quán cà phê quen, ly cà phê còn bốc khói, anh chậm rãi kể về kế hoạch: Tao muốn xây một khu nhà trọ giá rẻ dành riêng cho công nhân bên tao. Không miễn phí, nhưng giá rẻ, để tụi nó không phải áy náy, không phải mang cảm giác nợ hay ngại. Quan trọng là có chỗ ở ổn định, sạch sẽ, an toàn.Anh Toàn im lặng lắng nghe, đôi mắt chăm chú. Mình làm chủ, đâu chỉ trả lương là xong. Công nhân làm cực lắm, họ cống hiến sức mình cho công ty, thì công ty cũng phải tạo môi trường sống tốt để họ yên tâm làm việc. Một lúc sau, anh Toàn đặt ly nước xuống bàn và mỉm cười:  Tao đi cùng mày. Dự án này đáng làm. Giúp được người là tốt. Có tao, mày yên tâm.Chỉ một câu đó thôi mà anh thấy lòng ấm lên. Có người đồng hành, chia sẻ cùng tầm nhìn, cùng suy nghĩ… đúng là quý giá.Rồi hai anh em tiếp tục bàn: thiết kế khu trọ sao cho thoáng mát, sạch sẽ, diện tích mỗi phòng rộng hơn phòng trọ bình dân, có khu sinh hoạt chung, chỗ phơi đồ, chỗ gửi xe, phòng giá rẻ nhưng phải an toàn, tử tế, ưu tiên công nhân gắn bó lâu nămTừng chi tiết nhỏ đều được đặt lên bàn. Vì anh muốn làm đúng nghĩa “chỗ ở cho người lao động”, không phải khu trọ tạm bợ, chật chội như nhiều nơi khác.Anh nói với anh Toàn: Ngày xưa tao nghèo, tao biết cái cảnh công nhân lôi thôi, sống thiếu thốn, ngủ không ngon, lo chuyện phòng trọ tháng này tháng sau. Tao không muốn anh em trong xưởng tao phải trải qua những thứ đó nữa.Trong ánh chiều nghiêng qua cửa sổ, anh thấy rõ một điều: Khi chủ biết nghĩ cho người làm thuê, thì công ty mới thực sự lớn mạnh. Vì lòng người là cái giữ người ta ở lại, chứ không phải tiền lương.Kế hoạch khu nhà trọ giờ đây không còn chỉ là ý tưởng nữa.Nó đã bắt đầu thành hình, bằng sự quyết tâm, và bằng trái tim của hai người đàn ông từng lăn lộn từ con số không.</div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Tháng trước, trong một buổi sáng trời âm u lất phất mưa, anh ghé đến chùa Quang Lâm (Quận 8), nơi bao năm nay chăm sóc những cụ già neo đơn, không còn người thân nương tựa. Con hẻm nhỏ dẫn vào chùa yên tĩnh đến lạ, nhưng bên trong lại chứa biết bao phận người chờ hơi ấm từ xã hội.Khi bước vào khu dưỡng lão, anh thấy nhiều cụ già tóc bạc trắng, dáng người còng xuống theo năm tháng. Có cụ mắt đã mờ đục, phải sờ soạng từng bước. Có cụ run run từng nhịp thở, tay nắm chặt tay vịn để cố đứng vững.Anh nhìn một cụ đang cố gắng đẩy chiếc ghế nhỏ để vịn đi, mỗi bước như nặng bằng cả cuộc đời. Cảnh tượng ấy khiến anh nghẹn lại.Anh nghĩ thầm: Tuổi già lẽ ra phải được ở bên con cháu, được chăm sóc, được an yên. Vậy mà nhiều cụ ở đây lại phải nương nhờ cửa Phật… thật xót xa.Sư cô trụ trì dẫn anh đi thăm từng phòng. Có cụ nằm liệt giường, có cụ lú lẫn, có cụ chỉ biết nhìn anh cười móm mém như một đứa trẻ. Trên tay họ đều là những vết hằn thời gian. Anh nghe kể lại, nhiều cụ từng có tuổi trẻ vất vả, nhưng cuối đời lại lẻ loi, không ai chăm sóc.Khi rời khu dưỡng lão, trời đã tạnh mưa nhưng trong lòng anh thì vẫn nặng trĩu. Anh đứng trước sân chùa, nhìn về phía dãy phòng của các cụ, và chợt nảy ra một ý tưởng: Mình phải làm gì đó giúp các cụ đi lại đỡ vất vả hơn.Anh làm trong ngành gỗ, có nguyên vật liệu, có thợ. Tại sao không làm những thứ đơn giản mà các cụ cần?Ngay chiều hôm đó, anh gọi thợ lên văn phòng, yêu cầu thiết kế mẫu:Anh muốn làm 200 chiếc gậy ba toong bằng gỗ, nhẹ, chắc, chống trượt, tay cầm êm. Đây là quà anh muốn biếu cho các cụ. Làm bằng cả tấm lòng, đừng làm qua loa.Anh còn dự định lớn hơn: Mỗi năm, công ty anh sẽ đều đặn quyên góp cho chùa, hỗ trợ nhu yếu phẩm và tặng thêm gậy mới khi cần.Vì anh tin rằng làm từ thiện không phải một lần, mà là một hành trình.Một sự san sẻ đều đặn, bền bỉ, như cách người ta góp nhặt yêu thương để bù đắp lại những thiếu thốn mà cuộc đời đã lấy đi của người khác.Trên đường rời chùa hôm ấy, anh cảm giác trong lòng nhẹ đi phần nào. Anh biết, mình không thể thay đổi hết số phận, nhưng mình đủ khả năng để làm điều tử tế, để giúp các cụ cuối đời được bước vững hơn, ấm lòng hơn.Một việc nhỏ… nhưng ý nghĩa lại lớn vô cùng.</div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">U</div>
+                    <div class="story-info">
+                        <h3>Unknown</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Năm ngoái, trong chuyến đi từ thiện cùng đoàn, anh có ghé thăm trường Tiểu học Bình Hòa Nam (Long An). Ngôi trường nhỏ giữa miền quê yên bình, xung quanh là cánh đồng lúa xanh mướt, tiếng gió thổi qua hàng cây nghe rất đỗi thân quen. Hôm ấy, anh được tận mắt nhìn thấy những gương mặt học trò nghèo mà sáng bừng lên mỗi khi nhận được quà từ đoàn. Đó là một trong những chuyến đi khiến anh nhớ mãi.Tháng trước, trên đường công tác ngang qua Long An, anh quyết định ghé thăm lại trường. Chỉ là ý nghĩ ghé lại thăm thầy cô chút thôi, nhưng chuyến ghé thăm ấy lại dẫn anh đến một quyết định quan trọng.Khi bước vào lớp học, điều đầu tiên đập vào mắt anh chính là những bộ bàn ghế cũ kỹ, xuống cấp, lung lay theo từng nhịp ngồi của học trò.Có bộ bàn ghế chân đã lệch, phải chèn thêm miếng gỗ nhỏ để không bị nghiêng, Có bộ mặt bàn đã bong tróc, lộ cả vân gỗ thô bên dưới. Thậm chí có ghế bị sứt một góc, học sinh phải nép người tránh chạm phải.Anh nhìn mà thấy lòng mình nặng trĩu.Một lớp học nho nhỏ, vài chục học trò, nhưng mỗi lần đứng lên, ngồi xuống đều phải lo bàn ghế có rung không, có chênh vênh không.Thầy hiệu trưởng nhìn anh và cười hiền: Ở đây khó khăn, kinh phí ít, tụi nhỏ đông… nên mình chưa thay được nhiều em ạĐúng lúc ấy, trong lòng anh chỉ có một suy nghĩ: Mình phải làm gì đó, ít nhất để tụi nhỏ được ngồi học đàng hoàng hơn.Ngay ngày hôm sau, anh gọi thợ trong xưởng, rồi nói: Bắt tay vào làm cho anh 30 bộ bàn ghế học sinh theo đúng tiêu chuẩn. Mạnh tay đầu tư, không làm qua loa. Đây là quà cho các cháu, phải chắc – bền – an toàn.Thợ hỏi: Anh làm từ thiện hả anh?Anh cười: Ừ, nhưng không phải để khoe. Mình làm vì thấy cần làm. Tụi nhỏ xứng đáng có điều kiện học tốt hơn.Đến hôm nay, anh đã gia công gần một nửa số lượng. Bàn ghế mới bóng bẩy, chắc chắn, màu gỗ sáng tươi như nụ cười của học trò vùng quê.Dự tính sang tháng, khi tất cả hoàn thiện, anh sẽ đích thân mang đến trao tặng cho thầy cô và các em nhỏ. Anh muốn tận mắt nhìn những đứa trẻ bước vào lớp và ngồi lên chiếc bàn ghế mới, thứ được làm từ chính tấm lòng của anh và bàn tay của những người thợ trong xưởng.Đối với anh, mỗi hành động nhỏ như thế này không chỉ là giúp đỡ, mà còn là cách lan tỏa lòng nhân ái, gieo thêm chút hy vọng, chút yêu thương đến những nơi còn nhiều thiếu thốn.Và có lẽ, đó cũng là cách anh trả lại cuộc đời những điều tốt đẹp mà mình đã nhận được.</div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">C</div>
+                    <div class="story-info">
+                        <h3>CÂU CHUYỆN CÔNG VIỆC</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Giọt Nước Mắt Ở Góc Nhà KhoSáng nay, khi ánh nắng vừa xuyên qua những tấm kính mờ của tòa nhà, anh bước vào công ty như mọi ngày. Hành lang vẫn vang tiếng bước chân vội vã, tiếng máy pha cà phê lách tách, và mùi nước lau sàn quen thuộc thoang thoảng.Nhưng sáng nay, có một điều khiến anh khựng lại. Ở góc nhà kho, nơi chất đầy những dụng cụ để lau dọn, cô Quyên, cô lao công đã gắn bó với công ty từ những ngày đầu, đang ngồi gục đầu, lặng lẽ khóc.Cô vốn là người phụ nữ hiền lành, ít nói, lúc nào cũng cười khi gặp anh. Thế mà hôm nay, khuôn mặt ấy lại đầy nước mắt, đôi tay khô ráp run run lau vội bằng vạt áo đồng phục cũ.Anh tiến lại gần, nhẹ giọng hỏi thăm cô. Cô giật mình, ngẩng lên, đôi mắt đỏ hoe và nói không có chuyện gì. Anh nhẹ nhàng mời cô vô phòng làm việc của anh để nói chuyện. Trong căn phòng nhỏ, anh rót cho cô ly nước ấm. Một lúc sau, cô mới kể, giọng run run, đứt quãng, cô nói rằng, con trai cô bỏ nhà đi từ đêm qua chưa về, vì hai mẹ con cãi nhau. Cô cho nó đi học nghề, cô có nói vài câu nặng lời, rồi nó bỏ đi, giờ chưa về.Cô vừa nói vừa khóc nấc, hai bàn tay nắm chặt nhau.Anh nghe mà thấy nghèn nghẹn trong ngực. Anh hiểu cảm giác đó, nỗi lo của một người mẹ, vừa thương con, vừa bất lực.Anh nhẹ giọng nói với cô, tuổi này tụi nhỏ dễ tự ái lắm. Nó đang lớn, lại muốn chứng tỏ mình là người lớn. Mình càng la, nó càng chống lại. Cô đừng lo quá, chắc nó chỉ ra ngoài cho nguôi giận thôi.Con trẻ bây giờ không như hồi xưa nữa. Mình làm cha mẹ không chỉ để dạy dỗ, mà còn phải làm bạn với con. Phải nghe nó nói, để nó thấy mình hiểu. Chứ không thể áp dụng cách cha mẹ nói, con phải nghe như trước đượcCô nhìn anh, ánh mắt dần dịu lại. Anh kể cho cô nghe về tâm sinh lý của tuổi mới lớn cái tuổi ngang tàng, thích tự do nhưng lại rất dễ tổn thương. Anh tiếp tục phân tích để cô hiểu. Nhiều khi, con cái chỉ cần một người chịu lắng nghe. Nếu mình la, nó sẽ khép lòng. Nhưng nếu mình im lặng lắng nghe, nó sẽ mở lòng ra. Cô thử gọi điện, nhắn tin cho con, chỉ cần nói một câu Mẹ không giận con đâu, con về nhà ăn cơm nhé. Chỉ vậy thôi, có khi nó sẽ về.Cô sau khi nghe anh phân tích xong thì hiểu ra rằng bản thân hơi nóng tính, nói nhiều khi làm con tổn thươngAnh mỉm cười, đứng dậy vỗ nhẹ vai và động viên cô con nào cũng thương mẹ. Chỉ là đôi khi, chúng chưa biết cách nói thôi.Buổi chiều, khi công ty tan ca, anh nhìn thấy cô Quyên đi ngang qua hành lang, mắt vẫn đỏ nhưng miệng lại khẽ cười. Cô giơ điện thoại khoe với anh nói rằng con trai đã gọi điện cho cô và xin lỗi cô, bảo tối sẽ về ăn cơmAnh gật đầu, nụ cười nhẹ nở trên môi. Một ngày làm việc kết thúc trong yên bình, nhưng trong lòng anh lại thấy ấm áp lạ thường.Bởi đôi khi, giữa bao áp lực công việc, chỉ cần nhìn thấy một người mẹ nở nụ cười vì con mình trở về, là thấy cả thế giới nhẹ tênh.</div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-header">
+                    <div class="avatar">C</div>
+                    <div class="story-info">
+                        <h3>CÂU CHUYỆN CÔNG VIỆC</h3>
+                        <div class="story-date"></div>
+                    </div>
+                </div>
+                <div class="story-text">Người Bảo Vệ Và Buổi Sáng Ấm Áp Ở XưởngBuổi sáng hôm nay khi anh đến xưởng,vừa thấy anh, bác bảo vệ liền tháo chiếc mũ bảo vệ ra, khẽ cúi chào rồi nói nhỏ với anh, sếp ơi, lát sếp cho tôi xin nói chuyện riêng một chút được không ạ?Người đàn ông tóc đã điểm bạc, dáng người gầy nhưng nhanh nhẹn. Giọng bác trầm, có chút khàn và lẫn vào đó là nỗi lo lắng. Anh nhìn thoáng qua gương mặt hốc hác của bác, liền gật đầu và mời bác vô phòng làm việc của anh để nói chuyện.Vào đến phòng, bác ấy ngồi xuống ghế, hai bàn tay đan vào nhau, run run. Một lát, bác mới cất lời nói rằng tối qua con trai bác bị tai nạn giao thông, giờ đang nằm viện. Bác muốn xin nghỉ ít hôm để lên đó chăm conAnh hơi khựng lại, nhìn bác với ánh mắt lo lắng, anh hỏi han tình hìnhBác đôi mắt đỏ hoe kể lại sự tình, tối qua con trai bác đi làm về muộn, bị xe người ta tông trúng rồi bỏ chạy. Cũng may là có người dân gọi cứu thương kịp, giờ tạm ổn rồi, không nguy hiểm tính mạng. Nhưng chân bị gãy, còn người thì trầy xước khắp. Bác sĩ bảo phải nằm viện theo dõi vài ngày.Bác ngừng một chút, như cố giấu đi cảm xúc. Bác nói định gọi báo anh tối qua, mà sợ giờ đó anh đang nghỉ, gọi phiền nên đợi sáng nay tới nói trực tiếp. Bác cũng ngại, nhưng giờ phải lo tiền viện phí, nên xin sếp cho ứng trước lương tháng này để xoay sở tạmAnh nghe đến đó, trong lòng thấy nghẹn lại. Hơn ai hết, anh hiểu nỗi lo của người cha khi con gặp nạn, vừa thương con, vừa rối bời vì tiền bạc. Anh đứng dậy, đặt tay lên vai bác, khuyên bác không lo nhiều quá. Giờ quan trọng nhất là sức khỏe của con. Bác cứ lên đó chăm con. Ở đây, mọi việc công ty sẽ sắp xếpBác ngẩng đầu lên, mắt rưng rưng chắp tay nói lời cảm ơn. Anh nói rằng người trong công ty như người nhà. Anh sẽ báo kế toán ứng cho bác trước một tháng lương, và cho bác nghỉ trọn một tuần để lo cho conSau đó anh mở ngăn kéo, rút ra một phong bì có 5 triệu đồng, đặt nhẹ vào tay bác.Bác rụt rè không dám nhận, anh nhẹ nhàng nói với bác, bác cứ cầm đi. Ở đây bác là người tận tâm, làm việc bao năm trời, chưa bao giờ than thở hay xin nghỉ. Giờ là lúc tụi con được đền đáp lại một chút. Coi như tình nghĩa thôi bác ạBác im lặng vài giây, rồi cúi đầu thật sâu. Nước mắt rơi trên bàn tay chai sạnAnh cho bác trở về để thu xếp lên viện chăm sóc conLúc bác rời khỏi phòng, anh nhìn theo dáng lưng gầy gò khuất dần nơi cổng xưởng. Bác bước chậm, nhưng dường như nhẹ nhõm hơnAnh đứng lặng một lát, rồi khẽ thở dàiGiữa bộn bề công việc và những con số, đôi khi một cử chỉ nhỏ, một lời động viên, một chút sẻ chia chân thành, lại là điều khiến con người cảm thấy ấm áp nhấtVì hơn tất cả, trong cuộc sống này, thứ quý nhất vẫn là tình người</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="lightbox" id="lightbox">
+        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+        <span class="lightbox-nav lightbox-prev" onclick="changeImage(-1)">&#10094;</span>
+        <img id="lightbox-img" src="" alt="">
+        <span class="lightbox-nav lightbox-next" onclick="changeImage(1)">&#10095;</span>
+        <div class="lightbox-counter" id="lightbox-counter"></div>
+    </div>
+    
+    <script>
+        let currentImages = [];
+        let currentIndex = 0;
+        
+        function openLightbox(src) {
+            // Lấy tất cả ảnh từ gallery chứa ảnh được click
+            const clickedImg = document.querySelector(`img[src="${src}"]`);
+            const gallery = clickedImg.closest('.gallery');
+            currentImages = Array.from(gallery.querySelectorAll('img')).map(img => img.src);
+            currentIndex = currentImages.indexOf(src);
+            
+            document.getElementById('lightbox').classList.add('active');
+            document.getElementById('lightbox-img').src = src;
+            updateCounter();
+        }
+        
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+        }
+        
+        function changeImage(direction) {
+            currentIndex += direction;
+            if (currentIndex < 0) currentIndex = currentImages.length - 1;
+            if (currentIndex >= currentImages.length) currentIndex = 0;
+            
+            document.getElementById('lightbox-img').src = currentImages[currentIndex];
+            updateCounter();
+        }
+        
+        function updateCounter() {
+            document.getElementById('lightbox-counter').textContent = `${currentIndex + 1} / ${currentImages.length}`;
+        }
+        
+        document.getElementById('lightbox').addEventListener('click', function(e) {
+            if (e.target === this) closeLightbox();
+        });
+        
+        // Phím tắt điều hướng
+        document.addEventListener('keydown', function(e) {
+            if (!document.getElementById('lightbox').classList.contains('active')) return;
+            
+            if (e.key === 'ArrowLeft') changeImage(-1);
+            if (e.key === 'ArrowRight') changeImage(1);
+            if (e.key === 'Escape') closeLightbox();
+        });
+    </script>
+    
+    <!-- Marquee quảng cáo -->
+    <div style="position:fixed;bottom:0;left:0;width:100%;background:linear-gradient(90deg,#ff6b6b,#feca57,#48dbfb,#ff9ff3);background-size:300% 100%;animation:gradientMove 3s ease infinite;padding:15px 0;z-index:1000;overflow:hidden;box-shadow:0 -5px 20px rgba(0,0,0,0.3);">
+      <style>
+        @keyframes gradientMove{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+        @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+        .marquee-content{display:flex;animation:scroll 20s linear infinite;white-space:nowrap;}
+        .marquee-text{font-size:1.2rem;font-weight:bold;color:white;text-shadow:2px 2px 4px rgba(0,0,0,0.5);padding:0 50px;display:inline-block;}
+      </style>
+      <div class="marquee-content">
+        <span class="marquee-text">⭐ @ChenGuangLi - Zalo - Facebook - Javascrips - Python - Bot Telegram - Data khách hàng - Dịch vụ Facebook ⭐</span>
+        <span class="marquee-text">⭐ @ChenGuangLi - Zalo - Facebook - Javascrips - Python - Bot Telegram - Data khách hàng - Dịch vụ Facebook ⭐</span>
+        <span class="marquee-text">⭐ @ChenGuangLi - Zalo - Facebook - Javascrips - Python - Bot Telegram - Data khách hàng - Dịch vụ Facebook ⭐</span>
+        <span class="marquee-text">⭐ @ChenGuangLi - Zalo - Facebook - Javascrips - Python - Bot Telegram - Data khách hàng - Dịch vụ Facebook ⭐</span>
+      </div>
+    </div>
+
+<!-- QUẢNG CÁO -->
+<div style="position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#6c63ff,#00d4aa);padding:12px 20px;text-align:center;z-index:9999;box-shadow:0 -4px 20px rgba(0,0,0,0.5);">
+  <marquee behavior="scroll" direction="left" scrollamount="8" style="color:#fff;font-weight:700;font-size:15px;font-family:Arial,sans-serif;">
+    ⭐ @ChenGuangLi - Zalo - Facebook - Javascrips - Python - Bot Telegram - Data khách hàng - Dịch vụ Facebook ⭐
+  </marquee>
+</div>
+
+</body>
+</html>

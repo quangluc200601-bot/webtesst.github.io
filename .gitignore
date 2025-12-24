@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.log
+verified.json
+admin_key.json
+keys.json
+pending.json
+licenses.json

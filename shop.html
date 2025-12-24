@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Tài Khoản - Zalo, Facebook, Telegram</title>
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-card: #1a1a2e;
+            --accent: #6c63ff;
+            --accent2: #00d4aa;
+            --text: #ffffff;
+            --text-dim: #a0a0b0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a0a2e 100%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+            padding-bottom: 80px;
+        }
+        
+        .cross-nav {
+            max-width: 1200px;
+            margin: 18px auto;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            position: relative;
+            flex-wrap: wrap;
+            z-index: 100;
+        }
+        
+        .cross-link {
+            text-decoration: none;
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-weight: 600;
+            background: #ffd54a;
+            color: #222;
+            border: none;
+            margin: 4px;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+        
+        .cross-link:hover {
+            background: #ffed4e;
+        }
+        
+        .cross-link.active {
+            background: #d35400;
+            color: #fff;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto 40px;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+        
+        .header p {
+            color: var(--text-dim);
+            font-size: 1.2rem;
+        }
+        
+        .categories {
+            max-width: 1200px;
+            margin: 0 auto 40px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .category-btn {
+            padding: 12px 24px;
+            background: rgba(108, 99, 255, 0.2);
+            border: 2px solid var(--accent);
+            border-radius: 25px;
+            color: var(--text);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .category-btn:hover,
+        .category-btn.active {
+            background: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 99, 255, 0.4);
+        }
+        
+        .products {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .product-card {
+            background: var(--bg-card);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid rgba(108, 99, 255, 0.3);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(108, 99, 255, 0.3);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            position: relative;
+        }
+        
+        .product-image.zalo {
+            background: linear-gradient(135deg, #0068FF, #0088FF);
+        }
+        
+        .product-image.facebook {
+            background: linear-gradient(135deg, #1877F2, #4267B2);
+        }
+        
+        .product-image.whatsapp {
+            background: linear-gradient(135deg, #25D366, #128C7E);
+        }
+        
+        .product-image.viber {
+            background: linear-gradient(135deg, #7360F2, #665CAC);
+        }
+        
+        .product-image.telegram {
+            background: linear-gradient(135deg, #0088cc, #229ED9);
+        }
+        
+        .product-info {
+            padding: 20px;
+        }
+        
+        .product-category {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(108, 99, 255, 0.2);
+            border-radius: 15px;
+            font-size: 0.8rem;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+        
+        .product-title {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+        
+        .product-desc {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .product-price {
+            font-size: 1.8rem;
+            color: var(--accent2);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .product-stock {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            margin-bottom: 15px;
+            padding: 8px 12px;
+            background: rgba(0, 212, 170, 0.1);
+            border-radius: 6px;
+            border-left: 3px solid var(--accent2);
+        }
+        
+        .product-stock.low {
+            background: rgba(255, 193, 7, 0.1);
+            border-left-color: #ffc107;
+            color: #ffc107;
+        }
+        
+        .product-stock.out {
+            background: rgba(244, 67, 54, 0.1);
+            border-left-color: #f44336;
+            color: #f44336;
+        }
+        
+        .product-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+        
+        .btn-detail {
+            background: rgba(108, 99, 255, 0.2);
+            color: var(--accent);
+            border: 2px solid var(--accent);
+        }
+        
+        .btn-detail:hover {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .btn-buy {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: white;
+        }
+        
+        .btn-buy:hover {
+            filter: brightness(1.2);
+            transform: scale(1.05);
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 20px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            border: 2px solid var(--accent);
+        }
+        
+        .modal-header {
+            padding: 30px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: white;
+            position: relative;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+        
+        .modal-body {
+            padding: 30px;
+        }
+        
+        .modal-section {
+            margin-bottom: 25px;
+        }
+        
+        .modal-section h3 {
+            color: var(--accent);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .modal-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .modal-section ul li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            color: var(--text-dim);
+        }
+        
+        .modal-section ul li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--accent2);
+            font-weight: bold;
+        }
+        
+        .modal-footer {
+            padding: 20px 30px;
+            background: rgba(108, 99, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-price {
+            font-size: 2rem;
+            color: var(--accent2);
+            font-weight: 700;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .products {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                margin: 20px;
+            }
+        }
+        
+        /* Maintenance Warning */
+        .maintenance-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 9998;
+            pointer-events: none;
+        }
+        
+        .maintenance-banner {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            color: white;
+            padding: 40px 60px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(255, 107, 107, 0.5);
+            z-index: 9999;
+            text-align: center;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            animation: pulse 2s ease-in-out infinite;
+            max-width: 90%;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+                box-shadow: 0 20px 60px rgba(255, 107, 107, 0.5);
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.02);
+                box-shadow: 0 25px 70px rgba(255, 107, 107, 0.7);
+            }
+        }
+        
+        .maintenance-banner h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .maintenance-banner p {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            opacity: 0.95;
+        }
+        
+        .maintenance-banner .warning-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: shake 3s ease-in-out infinite;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            10%, 30%, 50%, 70%, 90% { transform: rotate(-5deg); }
+            20%, 40%, 60%, 80% { transform: rotate(5deg); }
+        }
+
+        .maintenance-banner .banner-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .maintenance-banner .btn-banner {
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .maintenance-banner .btn-contact {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .maintenance-banner .btn-contact:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.6);
+        }
+
+        .maintenance-banner .btn-continue {
+            background: linear-gradient(135deg, #fff, #f0f0f0);
+            color: #333;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .maintenance-banner .btn-continue:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+        }
+        
+        @media (max-width: 768px) {
+            .maintenance-banner {
+                padding: 30px 40px;
+            }
+            
+            .maintenance-banner h2 {
+                font-size: 1.8rem;
+            }
+            
+            .maintenance-banner p {
+                font-size: 1rem;
+            }
+            
+            .maintenance-banner .warning-icon {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Serious Warning Overlay -->
+<div class="maintenance-overlay"></div>
+<div class="maintenance-banner">
+    <div class="warning-icon">🚧</div>
+    <h2>🚧 ĐANG PHÁT TRIỂN VÀ BẢO TRÌ 🚧</h2>
+    <p>🔧 Trang này đang trong quá trình hoàn thiện</p>
+    <p>💻 NHẬN LÀM WEBSITE - THIẾ T KẾ WEB</p>
+    <p>📢 NHẬN PR SẢN PHẨM - QUẢNG CÁO</p>
+    <p style="font-size:0.9rem;margin-top:15px;opacity:0.8;">📞 Liên hệ @ChenGuangLi để đặt dịch vụ</p>
+    <div class="banner-buttons">
+        <a href="https://t.me/ChenGuangLi" target="_blank" class="btn-banner btn-contact">📞 Liên hệ ngay</a>
+        <a href="index.html" class="btn-banner btn-continue">← Vui lòng bấm vào trang khác</a>
+    </div>
+</div>
+
+<nav class="cross-nav">
+    <a href="index.html" class="cross-link">Trang chủ</a>
+    <a href="vip1.html" class="cross-link">Câu Chuyện</a>
+    <a href="vip2.html" class="cross-link">Câu Chuyện</a>
+    <a href="shop.html" class="cross-link active">Shop Tài Khoản</a>
+    <a href="marketplace.html" class="cross-link">Appweb</a>
+    <a href="vip3.html" class="cross-link">Đang phát triển</a>
+</nav>
+
+<div class="header">
+    <h1>🛒 SHOP TÀI KHOẢN</h1>
+    <p>Zalo - Facebook - Telegram - WhatsApp - Viber - Chất lượng cao, giá tốt</p>
+</div>
+
+<div class="categories">
+    <button class="category-btn active" data-category="all">Tất cả</button>
+    <button class="category-btn" data-category="zalo">Zalo</button>
+    <button class="category-btn" data-category="facebook">Facebook</button>
+    <button class="category-btn" data-category="telegram">Telegram</button>
+    <button class="category-btn" data-category="whatsapp">WhatsApp</button>
+    <button class="category-btn" data-category="viber">Viber</button>
+</div>
+
+<div class="products" id="productsContainer"></div>
+
+<!-- Modal -->
+<div class="modal" id="productModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            <h2 id="modalTitle">Product Title</h2>
+            <span id="modalCategory" class="product-category"></span>
+        </div>
+        <div class="modal-body">
+            <div class="modal-section">
+                <h3>📝 Mô tả sản phẩm</h3>
+                <p id="modalDescription"></p>
+            </div>
+            <div class="modal-section">
+                <h3>✨ Tính năng chính</h3>
+                <ul id="modalFeatures"></ul>
+            </div>
+            <div class="modal-section">
+                <h3>📋 Yêu cầu hệ thống</h3>
+                <p id="modalRequirements"></p>
+            </div>
+            <div class="modal-section">
+                <h3>🎁 Hỗ trợ & Bảo hành</h3>
+                <p id="modalSupport"></p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="modal-price" id="modalPrice">0đ</div>
+            <button class="btn btn-buy" onclick="buyProduct()">Mua ngay</button>
+        </div>
+    </div>
+</div>
+
+<!-- QUẢNG CÁO -->
+<div style="position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#6c63ff,#00d4aa);padding:12px 20px;text-align:center;z-index:9999;box-shadow:0 -4px 20px rgba(0,0,0,0.5);">
+  <marquee behavior="scroll" direction="left" scrollamount="8" style="color:#fff;font-weight:700;font-size:15px;font-family:Arial,sans-serif;">
+    ⭐ @ChenGuangLi - Zalo - Facebook - Javascrips - Python - Bot Telegram - Data khách hàng - Dịch vụ Facebook ⭐
+  </marquee>
+</div>
+
+<script>
+// Clear old data - Force update to new product structure
+localStorage.removeItem('shopProducts');
+
+// Initialize products from localStorage or default data
+function initProducts() {
+    const saved = localStorage.getItem('shopProducts');
+    if (saved) {
+        return JSON.parse(saved);
+    }
+    
+    // Default products
+    const defaultProducts = [
+        // ZALO
+        {id: 1, category: 'zalo', type: 'Zalo Ngày', icon: 'Z', price: '5,000đ', stock: 0, description: 'Tài khoản Zalo thuê theo ngày - Chất lượng cao'},
+        {id: 2, category: 'zalo', type: 'Zalo Tháng', icon: 'Z', price: '80,000đ', stock: 0, description: 'Tài khoản Zalo thuê theo tháng - Giá tốt'},
+        {id: 3, category: 'zalo', type: 'Zalo Năm', icon: 'Z', price: '500,000đ', stock: 0, description: 'Tài khoản Zalo thuê theo năm - Tiết kiệm nhất'},
+        {id: 4, category: 'zalo', type: 'Zalo Business Basic', icon: 'Z', price: '150,000đ', stock: 0, description: 'Zalo Business Basic - Tính năng cơ bản cho doanh nghiệp'},
+        {id: 5, category: 'zalo', type: 'Zalo Business Pro', icon: 'Z', price: '300,000đ', stock: 0, description: 'Zalo Business Pro - Đầy đủ tính năng chuyên nghiệp'},
+        
+        // FACEBOOK
+        {id: 6, category: 'facebook', type: 'Facebook Chưa Verify', icon: 'f', price: '15,000đ', stock: 0, description: 'Tài khoản Facebook mới, chưa verify - Giá rẻ'},
+        {id: 7, category: 'facebook', type: 'Facebook Đã Verify', icon: 'f', price: '50,000đ', stock: 0, description: 'Facebook đã verify số điện thoại/email - An toàn'},
+        {id: 8, category: 'facebook', type: 'Facebook US Reg', icon: 'f', price: '120,000đ', stock: 0, description: 'Facebook đăng ký tại Mỹ - IP US - Chạy ads tốt'},
+        {id: 9, category: 'facebook', type: 'Facebook VN Reg', icon: 'f', price: '30,000đ', stock: 0, description: 'Facebook đăng ký Việt Nam - Phù hợp thị trường VN'},
+        {id: 10, category: 'facebook', type: 'Facebook Spam', icon: 'f', price: '10,000đ', stock: 0, description: 'Facebook chạy spam - Giá cực rẻ, số lượng lớn'},
+        {id: 11, category: 'facebook', type: 'Facebook Tích Xanh', icon: 'f', price: '500,000đ', stock: 0, description: 'Facebook có tích xanh verified - Uy tín cao'},
+        {id: 12, category: 'facebook', type: 'Facebook Chat Meta', icon: 'f', price: '200,000đ', stock: 0, description: 'Facebook có chat Meta - Hỗ trợ khách hàng chuyên nghiệp'},
+        {id: 13, category: 'facebook', type: 'Facebook Nhiều Bài Đăng', icon: 'f', price: '80,000đ', stock: 0, description: 'Facebook đã có nhiều bài đăng - Tài khoản cũ uy tín'},
+        
+        // TELEGRAM
+        {id: 14, category: 'telegram', type: 'Telegram Cơ Bản', icon: '✈', price: '10,000đ', stock: 0, description: 'Tài khoản Telegram cơ bản - Giá tốt'},
+        {id: 15, category: 'telegram', type: 'Telegram Premium', icon: '✈', price: '100,000đ', stock: 0, description: 'Telegram Premium - Tăng giới hạn upload, sticker'},
+        {id: 16, category: 'telegram', type: 'Telegram Aged', icon: '✈', price: '50,000đ', stock: 0, description: 'Telegram tài khoản cũ - Tránh spam filter'},
+        
+        // WHATSAPP
+        {id: 17, category: 'whatsapp', type: 'WhatsApp Cơ Bản', icon: '💬', price: '8,000đ', stock: 0, description: 'WhatsApp cơ bản - Giá rẻ'},
+        {id: 18, category: 'whatsapp', type: 'WhatsApp Business', icon: '💬', price: '120,000đ', stock: 0, description: 'WhatsApp Business verified - Chuyên nghiệp'},
+        {id: 19, category: 'whatsapp', type: 'WhatsApp US Number', icon: '💬', price: '150,000đ', stock: 0, description: 'WhatsApp số Mỹ - Uy tín cao'},
+        
+        // VIBER
+        {id: 20, category: 'viber', type: 'Viber Cơ Bản', icon: '📞', price: '8,000đ', stock: 0, description: 'Viber cơ bản - Giá tốt'},
+        {id: 21, category: 'viber', type: 'Viber Business', icon: '📞', price: '90,000đ', stock: 0, description: 'Viber Business account - Chuyên nghiệp'}
+    ];
+    
+    localStorage.setItem('shopProducts', JSON.stringify(defaultProducts));
+    return defaultProducts;
+}
+
+let products = initProducts();
+let currentProduct = null;
+
+function saveProducts() {
+    localStorage.setItem('shopProducts', JSON.stringify(products));
+}
+
+function renderProducts(category = 'all') {
+    const container = document.getElementById('productsContainer');
+    const filtered = category === 'all' 
+        ? products 
+        : products.filter(p => p.category === category);
+    
+    container.innerHTML = filtered.map(product => {
+        let stockClass = '';
+        let stockText = `📦 Còn ${product.stock} tài khoản`;
+        
+        if (product.stock === 0) {
+            stockClass = 'out';
+            stockText = '❌ Hết hàng';
+        } else if (product.stock <= 5) {
+            stockClass = 'low';
+            stockText = `⚠️ Chỉ còn ${product.stock} tài khoản`;
+        }
+        
+        return `
+        <div class="product-card" data-category="${product.category}">
+            <div class="product-image ${product.category}">${product.icon}</div>
+            <div class="product-info">
+                <span class="product-category">${getCategoryName(product.category)}</span>
+                <h3 class="product-title">${product.type}</h3>
+                <p class="product-desc">${product.description}</p>
+                <div class="product-price">${product.price}</div>
+                <div class="product-stock ${stockClass}">${stockText}</div>
+                <div class="product-actions">
+                    <button class="btn btn-detail" onclick="showDetail(${product.id})">Chi tiết</button>
+                    <button class="btn btn-buy" onclick="buyProduct('${product.type}', '${product.category}')" ${product.stock === 0 ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>
+                        ${product.stock === 0 ? 'Hết hàng' : 'Mua ngay'}
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    }).join('');
+}
+
+function getCategoryName(category) {
+    const names = {
+        'zalo': 'Zalo',
+        'facebook': 'Facebook',
+        'telegram': 'Telegram',
+        'whatsapp': 'WhatsApp',
+        'viber': 'Viber'
+    };
+    return names[category] || category;
+}
+
+function showDetail(productId) {
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+    
+    currentProduct = product;
+    
+    let stockStatus = `Còn ${product.stock} tài khoản`;
+    if (product.stock === 0) stockStatus = 'Hết hàng';
+    else if (product.stock <= 5) stockStatus = `Sắp hết - Chỉ còn ${product.stock}`;
+    
+    document.getElementById('modalTitle').textContent = product.type;
+    document.getElementById('modalCategory').textContent = getCategoryName(product.category);
+    document.getElementById('modalDescription').textContent = product.description;
+    document.getElementById('modalPrice').textContent = product.price;
+    
+    document.getElementById('modalRequirements').textContent = 
+        `Tình trạng kho: ${stockStatus} | Loại: ${product.type}`;
+    
+    document.getElementById('modalSupport').textContent = 
+        'Giao hàng ngay sau khi thanh toán. Hỗ trợ 24/7 qua Telegram. Bảo hành đổi mới nếu lỗi.';
+    
+    const featuresList = document.getElementById('modalFeatures');
+    const features = [
+        'Tài khoản chất lượng cao',
+        'Đã kiểm tra kỹ lưỡng',
+        'Bảo hành đổi mới nếu lỗi',
+        'Giao hàng tức thì',
+        'Hỗ trợ 24/7',
+        'Giá cả hợp lý'
+    ];
+    featuresList.innerHTML = features.map(f => `<li>${f}</li>`).join('');
+    
+    document.getElementById('productModal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('productModal').classList.remove('active');
+}
+
+function buyProduct(productName, category) {
+    const message = `Xin chào! Tôi muốn mua ${productName} (${getCategoryName(category)}). Vui lòng tư vấn!`;
+    const telegramUrl = `https://t.me/ChenGuangLi?text=${encodeURIComponent(message)}`;
+    window.open(telegramUrl, '_blank');
+}
+
+// Category filter
+document.querySelectorAll('.category-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderProducts(btn.dataset.category);
+    });
+});
+
+// Close modal on outside click
+document.getElementById('productModal').addEventListener('click', (e) => {
+    if (e.target.id === 'productModal') {
+        closeModal();
+    }
+});
+
+// ESC to close modal
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeModal();
+    }
+});
+
+// Initial render
+renderProducts();
+</script>
+
+</body>
+</html>

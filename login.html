@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>ACTIVE LICENSE</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:radial-gradient(circle at top,#0b1224,#000);
+  font-family:Orbitron,monospace;
+  color:#0ff;
+  overflow:hidden;
+}
+
+.box{
+  width:360px;
+  padding:30px;
+  border:1px solid #0ff;
+  border-radius:16px;
+  background:rgba(0,0,0,.65);
+  box-shadow:0 0 40px #0ff7;
+  text-align:center;
+  z-index:10;
+}
+
+h2{margin-bottom:18px;letter-spacing:2px}
+
+input{
+  width:100%;
+  padding:14px;
+  background:#020a14;
+  border:1px solid #0ff;
+  border-radius:10px;
+  color:#0ff;
+  outline:none;
+  text-align:center;
+  letter-spacing:2px;
+}
+
+button{
+  margin-top:16px;
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:10px;
+  background:linear-gradient(135deg,#0ff,#00aaff);
+  color:#001;
+  font-weight:700;
+  cursor:pointer;
+  transition:.3s;
+}
+button:hover{filter:brightness(1.2)}
+button:disabled{opacity:.6;cursor:not-allowed}
+
+#msg{
+  margin-top:16px;
+  min-height:24px;
+  font-size:13px;
+}
+
+#fx{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  z-index:1;
+  pointer-events:none;
+}
+</style>
+</head>
+<body>
+
+<div class="box">
+  <h2>ENTER LICENSE KEY</h2>
+  <input id="key" placeholder="XXXX-XXXX-XXXX-XXXX">
+  <button id="btn" onclick="login()">ACTIVE</button>
+  <div id="msg"></div>
+  
+  <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(0,255,255,0.3);">
+    <a href="get-key.html" style="color: #00ff88; text-decoration: none; font-size: 14px; display: inline-block; padding: 10px 20px; border: 1px solid #00ff88; border-radius: 8px; transition: all 0.3s;">
+      🎁 Nhận Key Miễn Phí 1 Ngày
+    </a>
+  </div>
+</div>
+
+<canvas id="fx"></canvas>
+
+<script>
+const TELE = "https://t.me/ChenGuangLi"   // 👈 TELE BOT
+const msg = t => document.getElementById("msg").innerHTML = t
+const btn = document.getElementById("btn")
+
+async function login(){
+  const key = document.getElementById("key").value.trim()
+  
+  if(!key) return msg("⚠️ Vui lòng nhập KEY")
+
+  btn.disabled = true
+  msg("⏳ Đang xác minh KEY...")
+
+  // Check key in localStorage
+  const allKeys = JSON.parse(localStorage.getItem('allKeys') || '[]')
+  const foundKey = allKeys.find(k => k.key === key && k.status === 'active')
+  
+  if(foundKey) {
+    // Check expiration
+    const now = new Date()
+    const expireDate = new Date(foundKey.expireAt)
+    
+    if(now > expireDate) {
+      msg("❌ KEY ĐÃ HẾT HẠN")
+      btn.disabled = false
+      return
+    }
+    
+    // Save session
+    sessionStorage.setItem("activeKey", key)
+    sessionStorage.setItem("activeTelegram", foundKey.telegram)
+    sessionStorage.setItem("activePhone", foundKey.phone)
+    
+    msg("🎉 CHÚC MỪNG BẠN ĐÃ ACTIVE THÀNH CÔNG 🎉")
+    confetti()
+    setTimeout(()=>location.href="index.html", 2500)
+  } else {
+    msg("❌ KEY KHÔNG HỢP LỆ HOẶC ĐÃ ĐƯỢC SỬ DỤNG")
+    btn.disabled = false
+  }
+}
+
+// ENTER để login
+document.getElementById("key").addEventListener("keydown",e=>{
+  if(e.key==="Enter") login()
+})
+
+/* ===== CONFETTI EFFECT ===== */
+const canvas = document.getElementById("fx")
+const ctx = canvas.getContext("2d")
+canvas.width = innerWidth
+canvas.height = innerHeight
+let particles=[]
+
+function confetti(){
+  for(let i=0;i<200;i++){
+    particles.push({
+      x:Math.random()*canvas.width,
+      y:Math.random()*canvas.height,
+      r:Math.random()*6+2,
+      c:`hsl(${Math.random()*360},100%,50%)`,
+      vx:(Math.random()-.5)*4,
+      vy:Math.random()*3+2
+    })
+  }
+  requestAnimationFrame(draw)
+}
+
+function draw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height)
+  particles.forEach(p=>{
+    ctx.beginPath()
+    ctx.fillStyle=p.c
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2)
+    ctx.fill()
+    p.x+=p.vx
+    p.y+=p.vy
+  })
+  requestAnimationFrame(draw)
+}
+
+window.onresize=()=>{
+  canvas.width=innerWidth
+  canvas.height=innerHeight
+}
+</script>
+
+<!-- QUẢNG CÁO -->
+<div style="position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#6c63ff,#00d4aa);padding:12px 20px;text-align:center;z-index:9999;box-shadow:0 -4px 20px rgba(0,0,0,0.5);">
+  <marquee behavior="scroll" direction="left" scrollamount="8" style="color:#fff;font-weight:700;font-size:15px;font-family:Arial,sans-serif;">
+    ⭐ @ChenGuangLi - Zalo - Facebook - Javascrips - Python - Bot Telegram - Data khách hàng - Dịch vụ Facebook ⭐
+  </marquee>
+</div>
+
+</body>
+</html>

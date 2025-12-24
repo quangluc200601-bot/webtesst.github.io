@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kích Hoạt Key Miễn Phí</title>
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-card: #1a1a2e;
+            --accent: #6c63ff;
+            --accent-green: #00d4aa;
+            --text: #ffffff;
+            --text-dim: #a0a0b0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a0a2e 100%);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--accent-green), #00a88e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: var(--text-dim);
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        input[type="tel"],
+        input[type="text"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid rgba(0, 212, 170, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        input[type="tel"]:focus,
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--accent-green);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 4px rgba(0, 212, 170, 0.1);
+        }
+        
+        .free-badge {
+            background: linear-gradient(135deg, var(--accent-green), #00a88e);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--accent-green), #00a88e);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 212, 170, 0.4);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+        
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+        
+        .back-link:hover {
+            color: var(--accent-green);
+        }
+        
+        .note {
+            background: rgba(0, 212, 170, 0.1);
+            border-left: 4px solid var(--accent-green);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+        
+        .key-display {
+            display: none;
+            text-align: center;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        .key-display.show {
+            display: block;
+        }
+        
+        .success-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        
+        .key-code {
+            background: rgba(0, 212, 170, 0.1);
+            border: 2px solid var(--accent-green);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        
+        .key-code h3 {
+            color: var(--accent-green);
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+        
+        .key-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: var(--accent-green);
+            word-break: break-all;
+            font-family: monospace;
+        }
+        
+        .copy-btn {
+            margin-top: 15px;
+            padding: 12px 30px;
+            background: var(--accent-green);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .copy-btn:hover {
+            background: #00a88e;
+            transform: scale(1.05);
+        }
+        
+        .key-info {
+            background: rgba(108, 99, 255, 0.1);
+            border-left: 4px solid var(--accent);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .key-info p {
+            margin: 8px 0;
+            font-size: 0.9rem;
+        }
+        
+        .key-info strong {
+            color: var(--accent);
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--accent), #8b7aff);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 20px;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(108, 99, 255, 0.4);
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 1.6rem;
+            }
+            
+            .key-value {
+                font-size: 1.3rem;
+                letter-spacing: 2px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="requestForm">
+            <h1>🎁 Key Miễn Phí 1 Ngày</h1>
+            <p class="subtitle">Nhập thông tin để nhận key truy cập miễn phí</p>
+            
+            <div class="free-badge">
+                ⏰ 1 NGÀY MIỄN PHÍ - KHÔNG MẤT PHÍ
+            </div>
+            
+            <form id="activateForm">
+                <div class="form-group">
+                    <label for="phone">📱 Số điện thoại *</label>
+                    <input type="tel" id="phone" name="phone" placeholder="Nhập số điện thoại của bạn" required pattern="[0-9]{10,11}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="telegram">📲 Telegram ID *</label>
+                    <input type="text" id="telegram" name="telegram" placeholder="Nhập @username hoặc ID Telegram" required>
+                </div>
+                
+                <button type="submit" class="submit-btn">Tạo Key Miễn Phí</button>
+                
+                <div class="note">
+                    ℹ️ <strong>Lưu ý:</strong> Key có hiệu lực 24 giờ kể từ khi tạo. Sau 24h key sẽ hết hạn.
+                </div>
+            </form>
+            
+            <a href="login.html" class="back-link">← Quay lại đăng nhập</a>
+        </div>
+        
+        <div id="keyDisplay" class="key-display">
+            <div class="success-icon">🎉</div>
+            <h1>Key Đã Được Tạo!</h1>
+            
+            <div class="key-code">
+                <h3>KEY CỦA BẠN:</h3>
+                <div class="key-value" id="generatedKey"></div>
+                <button class="copy-btn" onclick="copyKey()">📋 Sao chép Key</button>
+            </div>
+            
+            <div class="key-info">
+                <p><strong>📱 Số điện thoại:</strong> <span id="displayPhone"></span></p>
+                <p><strong>📲 Telegram:</strong> <span id="displayTelegram"></span></p>
+                <p><strong>⏰ Thời hạn:</strong> 1 ngày (24 giờ)</p>
+                <p><strong>📅 Ngày tạo:</strong> <span id="displayDate"></span></p>
+                <p><strong>⏳ Hết hạn:</strong> <span id="displayExpire"></span></p>
+            </div>
+            
+            <a href="login.html" class="login-btn">Đăng Nhập Ngay →</a>
+        </div>
+    </div>
+    
+    <script>
+        function generateKey() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let key = '';
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    key += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                if (i < 3) key += '-';
+            }
+            return key;
+        }
+        
+        const form = document.getElementById('activateForm');
+        const requestForm = document.getElementById('requestForm');
+        const keyDisplay = document.getElementById('keyDisplay');
+        
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const phone = document.getElementById('phone').value.trim();
+            const telegram = document.getElementById('telegram').value.trim();
+            
+            // Validate
+            if (phone.length < 10 || phone.length > 11) {
+                alert('❌ Số điện thoại không hợp lệ!');
+                return;
+            }
+            
+            if (!telegram) {
+                alert('❌ Vui lòng nhập Telegram ID!');
+                return;
+            }
+            
+            // Generate key
+            const key = generateKey();
+            const now = new Date();
+            const expire = new Date(now.getTime() + 24 * 60 * 60 * 1000); // +24h
+            
+            // Save to localStorage
+            const keyData = {
+                key: key,
+                phone: phone,
+                telegram: telegram,
+                createdAt: now.toISOString(),
+                expireAt: expire.toISOString(),
+                duration: '1 ngày',
+                type: 'free',
+                status: 'active'
+            };
+            
+            // Get existing keys
+            let allKeys = JSON.parse(localStorage.getItem('allKeys') || '[]');
+            allKeys.push(keyData);
+            localStorage.setItem('allKeys', JSON.stringify(allKeys));
+            
+            // Display key
+            document.getElementById('generatedKey').textContent = key;
+            document.getElementById('displayPhone').textContent = phone;
+            document.getElementById('displayTelegram').textContent = telegram;
+            document.getElementById('displayDate').textContent = now.toLocaleString('vi-VN');
+            document.getElementById('displayExpire').textContent = expire.toLocaleString('vi-VN');
+            
+            // Show key display, hide form
+            requestForm.style.display = 'none';
+            keyDisplay.classList.add('show');
+        });
+        
+        function copyKey() {
+            const keyText = document.getElementById('generatedKey').textContent;
+            navigator.clipboard.writeText(keyText).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✅ Đã sao chép!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            });
+        }
+    </script>
+
+<!-- QUẢNG CÁO -->
+<div style="position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#6c63ff,#00d4aa);padding:12px 20px;text-align:center;z-index:9999;box-shadow:0 -4px 20px rgba(0,0,0,0.5);">
+  <marquee behavior="scroll" direction="left" scrollamount="8" style="color:#fff;font-weight:700;font-size:15px;font-family:Arial,sans-serif;">
+    ⭐ @ChenGuangLi - Zalo - Facebook - Javascrips - Python - Bot Telegram - Data khách hàng - Dịch vụ Facebook ⭐
+  </marquee>
+</div>
+
+</body>
+</html>

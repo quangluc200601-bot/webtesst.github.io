@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>ADMIN - Quản Lý Key</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:Orbitron,monospace;
+  background:radial-gradient(circle at top,#0b1224,#000);
+  color:#0ff;
+  min-height:100vh;
+  padding:20px;
+}
+
+.header {
+  text-align: center;
+  padding: 30px 0;
+  border-bottom: 2px solid #0ff;
+  margin-bottom: 30px;
+}
+
+h1 {
+  font-size: 2.5rem;
+  letter-spacing: 3px;
+  text-shadow: 0 0 20px #0ff;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.stat-card {
+  background: rgba(0,255,255,0.1);
+  border: 2px solid #0ff;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+
+.stat-card h3 {
+  font-size: 0.9rem;
+  color: #0ff;
+  margin-bottom: 10px;
+  opacity: 0.8;
+}
+
+.stat-card .number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #0ff;
+  text-shadow: 0 0 15px #0ff;
+}
+
+.controls {
+  max-width: 1200px;
+  margin: 0 auto 30px;
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 12px 24px;
+  background: linear-gradient(135deg,#0ff,#00aaff);
+  color: #001;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: 0.3s;
+}
+
+.btn:hover {
+  filter: brightness(1.2);
+  transform: translateY(-2px);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg,#ff4444,#cc0000);
+  color: white;
+}
+
+.search-box {
+  flex: 1;
+  min-width: 250px;
+  padding: 12px 16px;
+  background: rgba(0,255,255,0.05);
+  border: 2px solid #0ff;
+  border-radius: 8px;
+  color: #0ff;
+  font-family: inherit;
+}
+
+.search-box:focus {
+  outline: none;
+  background: rgba(0,255,255,0.1);
+}
+
+.table-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  background: rgba(0,0,0,0.6);
+  border: 2px solid #0ff;
+  border-radius: 12px;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background: rgba(0,255,255,0.2);
+}
+
+th {
+  padding: 15px 10px;
+  text-align: left;
+  font-weight: 700;
+  border-bottom: 2px solid #0ff;
+  font-size: 0.85rem;
+}
+
+td {
+  padding: 12px 10px;
+  border-bottom: 1px solid rgba(0,255,255,0.2);
+  font-size: 0.85rem;
+}
+
+tr:hover {
+  background: rgba(0,255,255,0.05);
+}
+
+.key-code {
+  font-family: monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.status {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.status.active {
+  background: rgba(0,255,0,0.2);
+  color: #0f0;
+  border: 1px solid #0f0;
+}
+
+.status.expired {
+  background: rgba(255,0,0,0.2);
+  color: #f00;
+  border: 1px solid #f00;
+}
+
+.btn-delete {
+  padding: 6px 12px;
+  background: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-family: inherit;
+}
+
+.btn-delete:hover {
+  background: #cc0000;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: rgba(0,255,255,0.5);
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 1.8rem;
+  }
+  
+  .stat-card .number {
+    font-size: 2rem;
+  }
+  
+  table {
+    font-size: 0.75rem;
+  }
+  
+  th, td {
+    padding: 8px 5px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🔐 ADMIN PANEL</h1>
+  <p style="opacity:0.7;margin-top:10px;">Quản lý toàn bộ license keys</p>
+</div>
+
+<div class="stats">
+  <div class="stat-card">
+    <h3>TỔNG KEY</h3>
+    <div class="number" id="totalKeys">0</div>
+  </div>
+  <div class="stat-card">
+    <h3>KEY HOẠT ĐỘNG</h3>
+    <div class="number" id="activeKeys">0</div>
+  </div>
+  <div class="stat-card">
+    <h3>KEY HẾT HẠN</h3>
+    <div class="number" id="expiredKeys">0</div>
+  </div>
+</div>
+
+<div class="controls">
+  <input type="text" class="search-box" id="searchBox" placeholder="🔍 Tìm kiếm (key, phone, telegram)...">
+  <button class="btn" onclick="refreshData()">🔄 Làm mới</button>
+  <button class="btn btn-danger" onclick="clearExpired()">🗑️ Xóa key hết hạn</button>
+  <button class="btn btn-danger" onclick="clearAll()">⚠️ Xóa tất cả</button>
+</div>
+
+<div class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th>KEY</th>
+        <th>SĐT</th>
+        <th>TELEGRAM</th>
+        <th>THỜI HẠN</th>
+        <th>NGÀY TẠO</th>
+        <th>HẾT HẠN</th>
+        <th>TRẠNG THÁI</th>
+        <th>HÀNH ĐỘNG</th>
+      </tr>
+    </thead>
+    <tbody id="keysTable">
+    </tbody>
+  </table>
+  <div id="emptyState" class="empty-state" style="display:none;">
+    <h3>📭 Chưa có key nào</h3>
+    <p>Các key được tạo sẽ hiển thị ở đây</p>
+  </div>
+</div>
+
+<script>
+let allKeysData = [];
+
+function loadKeys() {
+  allKeysData = JSON.parse(localStorage.getItem('allKeys') || '[]');
+  const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+  
+  // Filter by search
+  const filtered = searchTerm 
+    ? allKeysData.filter(k => 
+        k.key.toLowerCase().includes(searchTerm) ||
+        k.phone.includes(searchTerm) ||
+        k.telegram.toLowerCase().includes(searchTerm)
+      )
+    : allKeysData;
+  
+  // Sort by created date (newest first)
+  filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  
+  // Update stats
+  const now = new Date();
+  const active = allKeysData.filter(k => k.status === 'active' && new Date(k.expireAt) > now).length;
+  const expired = allKeysData.filter(k => new Date(k.expireAt) <= now).length;
+  
+  document.getElementById('totalKeys').textContent = allKeysData.length;
+  document.getElementById('activeKeys').textContent = active;
+  document.getElementById('expiredKeys').textContent = expired;
+  
+  // Render table
+  const tbody = document.getElementById('keysTable');
+  const emptyState = document.getElementById('emptyState');
+  
+  if (filtered.length === 0) {
+    tbody.innerHTML = '';
+    emptyState.style.display = 'block';
+    return;
+  }
+  
+  emptyState.style.display = 'none';
+  
+  tbody.innerHTML = filtered.map((k) => {
+    const isExpired = new Date(k.expireAt) <= now;
+    const statusClass = isExpired ? 'expired' : 'active';
+    const statusText = isExpired ? 'HẾT HẠN' : 'HOẠT ĐỘNG';
+    
+    // Find actual index in original array for deletion
+    const actualIndex = allKeysData.findIndex(key => key.key === k.key);
+    
+    return `
+      <tr>
+        <td class="key-code">${k.key}</td>
+        <td>${k.phone}</td>
+        <td>${k.telegram}</td>
+        <td>${k.duration}</td>
+        <td>${new Date(k.createdAt).toLocaleString('vi-VN', {hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric'})}</td>
+        <td>${new Date(k.expireAt).toLocaleString('vi-VN', {hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric'})}</td>
+        <td><span class="status ${statusClass}">${statusText}</span></td>
+        <td><button class="btn-delete" onclick="deleteKey(${actualIndex})">Xóa</button></td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function deleteKey(index) {
+  if (!confirm('Bạn có chắc muốn xóa key này?')) return;
+  
+  allKeysData.splice(index, 1);
+  localStorage.setItem('allKeys', JSON.stringify(allKeysData));
+  loadKeys();
+}
+
+function clearExpired() {
+  if (!confirm('Xóa tất cả key đã hết hạn?')) return;
+  
+  const now = new Date();
+  allKeysData = allKeysData.filter(k => new Date(k.expireAt) > now);
+  localStorage.setItem('allKeys', JSON.stringify(allKeysData));
+  loadKeys();
+}
+
+function clearAll() {
+  if (!confirm('⚠️ XÓA TẤT CẢ KEY? Hành động này không thể hoàn tác!')) return;
+  if (!confirm('Bạn THẬT SỰ chắc chắn?')) return;
+  
+  localStorage.removeItem('allKeys');
+  allKeysData = [];
+  loadKeys();
+}
+
+function refreshData() {
+  loadKeys();
+}
+
+// Search functionality
+document.getElementById('searchBox').addEventListener('input', loadKeys);
+
+// Initial load
+loadKeys();
+
+// Auto refresh every 30 seconds
+setInterval(loadKeys, 30000);
+</script>
+
+<!-- QUẢNG CÁO -->
+<div style="position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#6c63ff,#00d4aa);padding:12px 20px;text-align:center;z-index:9999;box-shadow:0 -4px 20px rgba(0,0,0,0.5);">
+  <marquee behavior="scroll" direction="left" scrollamount="8" style="color:#fff;font-weight:700;font-size:15px;font-family:Arial,sans-serif;">
+    ⭐ @ChenGuangLi - Zalo - Facebook - Javascrips - Python - Bot Telegram - Data khách hàng - Dịch vụ Facebook ⭐
+  </marquee>
+</div>
+
+</body>
+</html>
